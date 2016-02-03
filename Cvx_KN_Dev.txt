@@ -257,6 +257,9 @@ Version	Date	Development
 				F4に割り当て
 				imgTrim()を実装しﾜｰｸ重心算出
 				imgTrim()でdRでﾜｰｸ画像切出し
+173		160203	imgTrim()で重心を中心に外円と内円を描画
+				imgTrim()で輪郭検出
+				param.hに色定義を追加
 
 
 

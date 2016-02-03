@@ -1581,7 +1581,8 @@ void CCveDlg::imgTrim()
 	int		col = 2;	//	RED
 	int		nSumN, nSumX, nSumY;
 	double	dAvgX, dAvgY;
-	double	dR, dX, dY, dRad;
+	double	dR1, dR2, dX, dY, dRad;
+	double	dLen;
 
 	nSumN = nSumX = nSumY = 0;
 	for(y=0; y<PY; y++){
@@ -1596,11 +1597,34 @@ void CCveDlg::imgTrim()
 	dAvgX  = (double)nSumX/(double)nSumN;
 	dAvgY  = (double)nSumY/(double)nSumN;
 
-	//	Circle
-	dR = 500;
-	for(dRad=0; dRad<2*PI; dRad+=0.01){
-		dX = dR * cos(dRad) - PX/2;
-		dY = dR * sin(dRad) - PY/2;
-		uSfc[(int)dY][(int)dX][col] = 255;
+	//	Outline
+	for(dRad=-PI; dRad<PI; dRad+=0.01){
+		for(dLen=PX/2; dLen>0; dLen-=0.1){
+			dX = dLen * cos(dRad) + PX/2;
+			dY = dLen * sin(dRad) + PY/2;
+			if((dX>0)&&(dX<PX)&&(dY>0)&&(dY<PY)){
+				if(uSfc[(int)dX][(int)dY][col] != 0){
+					dLen = 0;
+					uSfc[(int)dX][(int)dY][col] = 255;
+					break;
+				}
+			}
+		}
 	}
+
+	//	Circle
+	dR1 = 200;
+	dR2 = 400;
+	for(dRad=-PI; dRad<PI; dRad+=0.01){
+		dX = dR1 * cos(dRad) + PX/2;
+		dY = dR1 * sin(dRad) + PY/2;
+		uSfc[(int)dX][(int)dY][col] = 255;
+		dX = dR2 * cos(dRad) + PX/2;
+		dY = dR2 * sin(dRad) + PY/2;
+		uSfc[(int)dX][(int)dY][col] = 255;
+	}
+
+
+
+
 }

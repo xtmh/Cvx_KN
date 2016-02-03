@@ -2,7 +2,7 @@
 //	param.h
 ////////////////////////
 
-#define		VER			172
+#define		VER			173
 
 #define		Z_RVS						//	Z²”½“]
 
@@ -32,6 +32,10 @@
 #define		POLSIZE		PD*PD*PC
 
 #define		OCTSIZE		PX*PY*PZ
+
+#define		BLUE		0
+#define		GREEN		1
+#define		RED			2
 
 #define		NUM			256
 #define		PAR			4				//	•ª•zã‰ºŒÀ‚ğŒˆ‚ß‚é•W€•Î·‚Ö‚ÌŒW”
