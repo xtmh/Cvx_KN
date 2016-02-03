@@ -1578,13 +1578,19 @@ void CCveDlg::OnBnClickedAnlyz()
 //	â~å`ƒÿ–›∏ﬁ
 void CCveDlg::imgTrim()
 {
-	int		x, y, c;
+	int		x, y, c, n;
 	int		col = RED;
 	int		nSumN, nSumX, nSumY;
-	double	dAvgX, dAvgY;
+	int		nCnt;
+	double	dAvgX, dAvgY, dAvgIn, dAvgOut;
 	double	dR1, dR2, dX, dY, dRad;
 	double	dLen;
+	double	dSita;
+	double	dIn, dOut;		//	ïΩãœó÷äs
+	double	dXi, dXo, dYi, dYo;
+	double	dRi, dRo;
 
+	dSita = 2*PI/PR;
 	nSumN = nSumX = nSumY = 0;
 	for(y=0; y<PY; y++){
 		for(x=0; x<PX; x++){
@@ -1596,12 +1602,14 @@ void CCveDlg::imgTrim()
 		}
 	}
 
-	//	èdêS
+	//	èdêSéZèo
 	dAvgX  = (double)nSumX/(double)nSumN;
 	dAvgY  = (double)nSumY/(double)nSumN;
 
 	//	Inline, Outline
-	for(dRad=-PI; dRad<PI; dRad+=0.005){
+	nCnt = 0;
+	for(dRad=-PI; dRad<PI; dRad+=dSita){
+		//	Inline
 		for(dLen=0; dLen<PX/2; dLen+=0.1){
 			dX = dLen * cos(dRad) + dAvgX;
 			dY = dLen * sin(dRad) + dAvgY;
@@ -1612,6 +1620,9 @@ void CCveDlg::imgTrim()
 				}
 			}
 		}
+		ptIn[nCnt] = CPoint((int)dX, (int)dY);
+
+		//	Outline
 		for(dLen=PX/2; dLen>0; dLen-=0.1){
 			dX = dLen * cos(dRad) + dAvgX;
 			dY = dLen * sin(dRad) + dAvgY;
@@ -1622,20 +1633,33 @@ void CCveDlg::imgTrim()
 				}
 			}
 		}
+		ptOut[nCnt] = CPoint((int)dX, (int)dY);
+		nCnt++;		//	∂≥›¿∞
 	}
+
+	//	ó÷äsï™êÕ
+	dRi = dRo = 0.0;
+	//dXi = dXo = dYi = dYo = 0.0;
+	for(n=0; n<PR; n++){
+		//	èdêSÇ©ÇÁÇÃãóó£ó›êœ
+		dRi += sqrt((ptIn[n].x-dAvgX)*(ptIn[n].x-dAvgX)+(ptIn[n].y-dAvgY)*(ptIn[n].y-dAvgY));
+		dRo += sqrt((ptOut[n].x-dAvgX)*(ptOut[n].x-dAvgX)+(ptOut[n].y-dAvgY)*(ptOut[n].y-dAvgY));
+	}
+	//	ïΩãœîºåa
+	dRi /= PR;
+	dRo /= PR;
 
 	//	Circle
-	dR1 = 200;
-	dR2 = 400;
-	for(dRad=-PI; dRad<PI; dRad+=0.005){
+	dR1 = dRi;
+	dR2 = dRo;
+	for(dRad=-PI; dRad<PI; dRad+=dSita){
 		dX = dR1 * cos(dRad) + dAvgX;
 		dY = dR1 * sin(dRad) + dAvgY;
-		uSfc[(int)dX][(int)dY][col] = 255;
+		uSfc[(int)dX][(int)dY][GREEN] = 255;
 		dX = dR2 * cos(dRad) + dAvgX;
 		dY = dR2 * sin(dRad) + dAvgY;
-		uSfc[(int)dX][(int)dY][col] = 255;
+		uSfc[(int)dX][(int)dY][GREEN] = 255;
 	}
-
 
 
 

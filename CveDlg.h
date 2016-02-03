@@ -122,6 +122,9 @@ public:
 	CPoint		ptPos;			//	ｸﾘｯｸ座標
 	CPoint		ptMov;			//	現在座標
 	CPoint		ptD[3];			//	傾斜補正の元行列のための座標3点
+	CPoint		ptIn[PR];		//	内輪郭座標群
+	CPoint		ptOut[PR];		//	外輪郭座標群
+
 
 	void		fileOpen();
 	void		imgRcv(uchar dst[][PY][PC], uchar src[][PY][PC], int x);

@@ -15,11 +15,11 @@
 //#define		CURVE		(60*SCALE)	//	˜p‹È•â³’l(Y•‚ÉØÆ±)
 #define		CURVE		(65*SCALE)	//	˜p‹È•â³’l(Y•‚ÉØÆ±)
 
-
 #define		PZ			512
 #define		PY			1024
 #define		PX			1024
 #define		PF			1024			//	‘ÌÚ°Ñ”(=PX)
+#define		PR			1000			//	—ÖŠsÃŞ°À”
 
 #define		EXPND		2				//	Šg‘å—¦
 
