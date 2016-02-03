@@ -76,7 +76,7 @@ CCveDlg::CCveDlg(CWnd* pParent /*=NULL*/)
 	, m_nSld(512)
 	, m_nEdit(0)
 	, m_strPathName(_T(""))
-	, m_bCal(TRUE)
+	, m_bCal(FALSE)				//	疑似ｶﾗｰ
 	, m_bPeak(TRUE)
 	, m_strSlide(_T(""))
 	, m_nSldCore(CORE_R)
@@ -85,7 +85,7 @@ CCveDlg::CCveDlg(CWnd* pParent /*=NULL*/)
 	, m_strSts(_T(""))
 	, m_bCurv(TRUE)
 	, m_strDet(_T(""))
-	, m_bIncl(TRUE)
+	, m_bIncl(FALSE)			//	傾斜面補正
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON2);
 
@@ -550,7 +550,8 @@ void CCveDlg::fileOpen()
 	dTm = GetPassTimeWindow();
 	UpdateData();				//	値取得
 	bRcv = false;				//	無補正ﾌﾗｸﾞ
-	m_bCurv = m_bIncl = true;	//	ﾃﾞｰﾀﾌｧｲﾙは湾曲補正・傾斜補正ありの状態で開く
+	//m_bCurv = m_bIncl = true;	//	ﾃﾞｰﾀﾌｧｲﾙは湾曲補正・傾斜補正ありの状態で開く
+	m_bCurv = true;				//	ﾃﾞｰﾀﾌｧｲﾙは湾曲補正ありの状態で開く
 	UpdateData(FALSE);			//	値設定
 
 	CFileDialog	dlg(TRUE, "*.oct", NULL, OFN_ALLOWMULTISELECT|OFN_EXPLORER, "octﾃﾞｰﾀﾌｧｲﾙ (*.oct)|*.oct|rawﾃﾞｰﾀﾌｧｲﾙ (*.raw)|*.raw||");
@@ -1578,7 +1579,7 @@ void CCveDlg::OnBnClickedAnlyz()
 void CCveDlg::imgTrim()
 {
 	int		x, y, c;
-	int		col = 2;	//	RED
+	int		col = RED;
 	int		nSumN, nSumX, nSumY;
 	double	dAvgX, dAvgY;
 	double	dR1, dR2, dX, dY, dRad;
@@ -1587,24 +1588,35 @@ void CCveDlg::imgTrim()
 	nSumN = nSumX = nSumY = 0;
 	for(y=0; y<PY; y++){
 		for(x=0; x<PX; x++){
-			if(uSfc[y][x][col] != 0){
+			if(uSfc[x][y][col] != 0){
 				nSumN++;	//	有効画素数
 				nSumX += x;	//	X座標累計
 				nSumY += y;	//	Y座標累計
 			}
 		}
 	}
+
+	//	重心
 	dAvgX  = (double)nSumX/(double)nSumN;
 	dAvgY  = (double)nSumY/(double)nSumN;
 
-	//	Outline
-	for(dRad=-PI; dRad<PI; dRad+=0.01){
-		for(dLen=PX/2; dLen>0; dLen-=0.1){
-			dX = dLen * cos(dRad) + PX/2;
-			dY = dLen * sin(dRad) + PY/2;
+	//	Inline, Outline
+	for(dRad=-PI; dRad<PI; dRad+=0.005){
+		for(dLen=0; dLen<PX/2; dLen+=0.1){
+			dX = dLen * cos(dRad) + dAvgX;
+			dY = dLen * sin(dRad) + dAvgY;
 			if((dX>0)&&(dX<PX)&&(dY>0)&&(dY<PY)){
-				if(uSfc[(int)dX][(int)dY][col] != 0){
-					dLen = 0;
+				if(uSfc[(int)dX][(int)dY][col] > 100){
+					uSfc[(int)dX][(int)dY][col] = 255;
+					break;
+				}
+			}
+		}
+		for(dLen=PX/2; dLen>0; dLen-=0.1){
+			dX = dLen * cos(dRad) + dAvgX;
+			dY = dLen * sin(dRad) + dAvgY;
+			if((dX>0)&&(dX<PX)&&(dY>0)&&(dY<PY)){
+				if(uSfc[(int)dX][(int)dY][col] > 100){
 					uSfc[(int)dX][(int)dY][col] = 255;
 					break;
 				}
@@ -1615,12 +1627,12 @@ void CCveDlg::imgTrim()
 	//	Circle
 	dR1 = 200;
 	dR2 = 400;
-	for(dRad=-PI; dRad<PI; dRad+=0.01){
-		dX = dR1 * cos(dRad) + PX/2;
-		dY = dR1 * sin(dRad) + PY/2;
+	for(dRad=-PI; dRad<PI; dRad+=0.005){
+		dX = dR1 * cos(dRad) + dAvgX;
+		dY = dR1 * sin(dRad) + dAvgY;
 		uSfc[(int)dX][(int)dY][col] = 255;
-		dX = dR2 * cos(dRad) + PX/2;
-		dY = dR2 * sin(dRad) + PY/2;
+		dX = dR2 * cos(dRad) + dAvgX;
+		dY = dR2 * sin(dRad) + dAvgY;
 		uSfc[(int)dX][(int)dY][col] = 255;
 	}
 
