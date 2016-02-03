@@ -201,6 +201,7 @@ BEGIN_MESSAGE_MAP(CCveDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_LZ4, &CCveDlg::OnBnClickedLz4)
 	ON_BN_CLICKED(IDC_OCT, &CCveDlg::OnBnClickedOct)
 	ON_BN_CLICKED(IDC_INCL, &CCveDlg::OnBnClickedIncl)
+	ON_BN_CLICKED(IDC_ANLYZ, &CCveDlg::OnBnClickedAnlyz)
 END_MESSAGE_MAP()
 
 
@@ -1448,15 +1449,15 @@ void CCveDlg::OnBnClickedSave()
 {	
 	CWaitCursor	cus;
 	CDC* dc(m_Circ.GetDC());
-    CBitmap bmpForSave;
-    CDC cdcForSave;
-    CRect r;
+	CBitmap bmpForSave;
+	CDC cdcForSave;
+	CRect r;
 
-    m_Circ.GetClientRect(&r);
-    //bmpForSave.CreateCompatibleBitmap(dc, r.Width(), r.Height());
-    bmpForSave.CreateCompatibleBitmap(dc, PX, PY);
-    cdcForSave.CreateCompatibleDC(dc);
-    cdcForSave.SelectObject(bmpForSave);
+	m_Circ.GetClientRect(&r);
+	//bmpForSave.CreateCompatibleBitmap(dc, r.Width(), r.Height());
+	bmpForSave.CreateCompatibleBitmap(dc, PX, PY);
+	cdcForSave.CreateCompatibleDC(dc);
+	cdcForSave.SelectObject(bmpForSave);
 
 	StretchDIBits(	cdcForSave.m_hDC,
 					//0, 0, PZ, PZ,				//	出力座標
@@ -1472,7 +1473,7 @@ void CCveDlg::OnBnClickedSave()
 							"画像ファイル (*.jpg)|*.jpg|全てのファイル(*.*)|*.*||");
 
 	if(dlg.DoModal() == IDOK){
-	    CString strMsg;
+		CString strMsg;
 		strMsg.Format(("ファイル名：%s\nパス：%s"),  dlg.GetFileName(), dlg.GetPathName());
 		//MessageBox(strMsg);
 		img.Save(dlg.GetPathName());
@@ -1564,4 +1565,42 @@ void CCveDlg::imgUpdate()
 	imgSurface();
 	imgSlc();
 	imgChg();
+}
+
+//	解析処理(特徴量抽出)
+void CCveDlg::OnBnClickedAnlyz()
+{
+	imgTrim();
+	Invalidate();
+}
+
+//	円形ﾄﾘﾐﾝｸﾞ
+void CCveDlg::imgTrim()
+{
+	int		x, y, c;
+	int		col = 2;	//	RED
+	int		nSumN, nSumX, nSumY;
+	double	dAvgX, dAvgY;
+	double	dR, dX, dY, dRad;
+
+	nSumN = nSumX = nSumY = 0;
+	for(y=0; y<PY; y++){
+		for(x=0; x<PX; x++){
+			if(uSfc[y][x][col] != 0){
+				nSumN++;	//	有効画素数
+				nSumX += x;	//	X座標累計
+				nSumY += y;	//	Y座標累計
+			}
+		}
+	}
+	dAvgX  = (double)nSumX/(double)nSumN;
+	dAvgY  = (double)nSumY/(double)nSumN;
+
+	//	Circle
+	dR = 500;
+	for(dRad=0; dRad<2*PI; dRad+=0.01){
+		dX = dR * cos(dRad) - PX/2;
+		dY = dR * sin(dRad) - PY/2;
+		uSfc[(int)dY][(int)dX][col] = 255;
+	}
 }

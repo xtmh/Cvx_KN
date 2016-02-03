@@ -145,6 +145,7 @@ public:
 	//void		imgPeak(uchar dst[][PX][PC], uchar src[][PX][PC]);
 	void		imgPol(uchar dst[][PD][PC], uchar src[][PX][PC]);
 	double		imgFitting(double dDst[], int nSrc[], int nPk);	//	∂∞ÃﬁÃ®Ø√®›∏ﬁèàóù
+	void		imgTrim();		//	ƒÿ–›∏ﬁ
 
 	void		makeTrig();
 	void		makeBar();
@@ -204,4 +205,5 @@ public:
 	afx_msg void OnBnClickedOct();
 	BOOL m_bIncl;
 	afx_msg void OnBnClickedIncl();
+	afx_msg void OnBnClickedAnlyz();
 };
