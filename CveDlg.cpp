@@ -1576,6 +1576,7 @@ void CCveDlg::OnBnClickedAnlyz()
 {
 	imgTrim();
 	imgFlat();
+	csvOut();
 	Invalidate();
 }
 
@@ -1608,7 +1609,7 @@ void CCveDlg::imgFlat()
 			if(uBin[x][y] != 0){
 				dSum = (uSfc[x][y][RED]-dAvg);			//	•Î·
 				ftSfc.dRa += fabs(dSum);				//	—ÝÏ•Î·				
-				ftSfc.dDist += (ftSfc.dRa*ftSfc.dRa);	//	—ÝÏ•ªŽU’l
+				ftSfc.dDist += (dSum*dSum);	//	—ÝÏ•ªŽU’l
 				if(dSum>dMax)			dMax = dSum;
 				else if(dSum<dMin)		dMin = dSum;
 			}
@@ -1700,4 +1701,20 @@ void CCveDlg::imgTrim()
 
 }
 
+//	Êß×Ò°Ào—Í
+void CCveDlg::csvOut()
+{
+	CFile	f;
+	CString	str;
+
+	f.Open("c:\\temp\\cvx\\mt_prm.csv", CFile::modeWrite|CFile::modeCreate);
+	str.Format("SDist,SRa,SRy,IDist,IRa,IRy,ODist,ORa,ORy\n");
+	f.Write(str, str.GetLength());
+	str.Format("%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\n", 
+		ftSfc.dDist, ftSfc.dRa,ftSfc.dRy,
+		crIn.dDist, crIn.dRa, crIn.dRy,
+		crOut.dDist, crOut.dRa, crOut.dRy);
+	f.Write(str, str.GetLength());
+	f.Close();
+}
 

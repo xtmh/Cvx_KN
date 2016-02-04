@@ -274,7 +274,7 @@ Version	Date	Development
 				Ü°¸Ï¯ÌßuBin[]‚ğì¬
 				imgTrim()‚Å“àŠOŒa‚ÅuBIn[]‚ğ“ñ’l‰»
 180		160204	imgFlat()‚Å–Ê“à‚ÌŠeíÊß×Ò°À‘ª’è
-
+181		160204	
 
 
 

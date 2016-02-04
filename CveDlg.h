@@ -206,6 +206,8 @@ public:
 	void		imgTrim();		//	‰~ü‘®«•]‰¿(“àŠOŒ`)
 	void		imgFlat();		//	–Ê‚Ì•½’R“x•]‰¿
 
+	void		csvOut();		//	Êß×Ò°À‚ÌCSVo—Í
+
 	void		makeTrig();
 	void		makeBar();
 
