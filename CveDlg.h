@@ -26,6 +26,19 @@ public:
 	int		nFit[FIT_NUM];
 };
 
+//	円周解析ﾃﾞｰﾀｸﾗｽ
+class COtl
+{
+public:
+	CPoint	ptCg;			//	重心
+	CPoint	ptCirc[PR];		//	円周座標値
+	void	calc();			//	各種ﾊﾟﾗﾒｰﾀ算出(dDist, dRy, dRa)	
+	//	calc()で算出
+	double	dR;				//	平均半径
+	double	dDist;			//	分散値
+	double	dRy;			//	Ry:最大高さ(PV値)
+	double	dRa;			//	Ra:算術平均高さ
+};
 
 // CCveDlg ダイアログ
 class CCveDlg : public CDialogEx
@@ -122,8 +135,8 @@ public:
 	CPoint		ptPos;			//	ｸﾘｯｸ座標
 	CPoint		ptMov;			//	現在座標
 	CPoint		ptD[3];			//	傾斜補正の元行列のための座標3点
-	CPoint		ptIn[PR];		//	内輪郭座標群
-	CPoint		ptOut[PR];		//	外輪郭座標群
+
+	COtl		crOut, crIn;
 
 
 	void		fileOpen();

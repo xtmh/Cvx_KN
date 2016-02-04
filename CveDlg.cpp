@@ -1582,13 +1582,11 @@ void CCveDlg::imgTrim()
 	int		col = RED;
 	int		nSumN, nSumX, nSumY;
 	int		nCnt;
-	double	dAvgX, dAvgY, dAvgIn, dAvgOut;
 	double	dR1, dR2, dX, dY, dRad;
 	double	dLen;
 	double	dSita;
-	double	dIn, dOut;		//	ïΩãœó÷äs
 	double	dXi, dXo, dYi, dYo;
-	double	dRi, dRo;
+	double	dRi, dRo;		//	ïΩãœåa
 
 	dSita = 2*PI/PR;
 	nSumN = nSumX = nSumY = 0;
@@ -1603,16 +1601,17 @@ void CCveDlg::imgTrim()
 	}
 
 	//	èdêSéZèo
-	dAvgX  = (double)nSumX/(double)nSumN;
-	dAvgY  = (double)nSumY/(double)nSumN;
+	crIn.ptCg.x  = (int)((double)nSumX/(double)nSumN+0.5);
+	crIn.ptCg.y  = (int)((double)nSumY/(double)nSumN+0.5);
+	crOut.ptCg = crIn.ptCg;
 
 	//	Inline, Outline
 	nCnt = 0;
 	for(dRad=-PI; dRad<PI; dRad+=dSita){
 		//	Inline
 		for(dLen=0; dLen<PX/2; dLen+=0.1){
-			dX = dLen * cos(dRad) + dAvgX;
-			dY = dLen * sin(dRad) + dAvgY;
+			dX = dLen * cos(dRad) + crIn.ptCg.x;
+			dY = dLen * sin(dRad) + crIn.ptCg.y;
 			if((dX>0)&&(dX<PX)&&(dY>0)&&(dY<PY)){
 				if(uSfc[(int)dX][(int)dY][col] > 100){
 					uSfc[(int)dX][(int)dY][col] = 255;
@@ -1620,12 +1619,12 @@ void CCveDlg::imgTrim()
 				}
 			}
 		}
-		ptIn[nCnt] = CPoint((int)dX, (int)dY);
+		crIn.ptCirc[nCnt] = CPoint((int)dX, (int)dY);	//	ó÷äsì_ç¿ïWåQ
 
 		//	Outline
 		for(dLen=PX/2; dLen>0; dLen-=0.1){
-			dX = dLen * cos(dRad) + dAvgX;
-			dY = dLen * sin(dRad) + dAvgY;
+			dX = dLen * cos(dRad) + crOut.ptCg.x;
+			dY = dLen * sin(dRad) + crOut.ptCg.y;
 			if((dX>0)&&(dX<PX)&&(dY>0)&&(dY<PY)){
 				if(uSfc[(int)dX][(int)dY][col] > 100){
 					uSfc[(int)dX][(int)dY][col] = 255;
@@ -1633,10 +1632,17 @@ void CCveDlg::imgTrim()
 				}
 			}
 		}
-		ptOut[nCnt] = CPoint((int)dX, (int)dY);
+		crOut.ptCirc[nCnt] = CPoint((int)dX, (int)dY);	//	ó÷äsì_ç¿ïWåQ
 		nCnt++;		//	∂≥›¿∞
 	}
 
+	//	ó÷äs√ﬁ∞¿ï™êÕ(dDist, dRy, dRa)
+	crIn.calc();
+	crOut.calc();
+
+	n = 0;
+
+	/*
 	//	ó÷äsï™êÕ
 	dRi = dRo = 0.0;
 	//dXi = dXo = dYi = dYo = 0.0;
@@ -1648,19 +1654,49 @@ void CCveDlg::imgTrim()
 	//	ïΩãœîºåa
 	dRi /= PR;
 	dRo /= PR;
-
-	//	Circle
-	dR1 = dRi;
-	dR2 = dRo;
+	//	ïΩãœåaÇÃCircle
 	for(dRad=-PI; dRad<PI; dRad+=dSita){
-		dX = dR1 * cos(dRad) + dAvgX;
-		dY = dR1 * sin(dRad) + dAvgY;
+		dX = dRi * cos(dRad) + dAvgX;
+		dY = dRi * sin(dRad) + dAvgY;
 		uSfc[(int)dX][(int)dY][GREEN] = 255;
-		dX = dR2 * cos(dRad) + dAvgX;
-		dY = dR2 * sin(dRad) + dAvgY;
+		dX = dRo * cos(dRad) + dAvgX;
+		dY = dRo * sin(dRad) + dAvgY;
 		uSfc[(int)dX][(int)dY][GREEN] = 255;
 	}
 
-
+	for(n=0; n<PR; n++){
+	*/
 
 }
+
+void COtl::calc()
+{
+	int		x, y, n;
+	double	temp[PR];
+	double	sum, max, min;
+
+	//	ïΩãœîºåaéZèo
+	dR = 0;
+	for(n=0; n<PR; n++){
+		temp[n] = sqrt((double)((ptCirc[n].x-ptCg.x)*(ptCirc[n].x-ptCg.x)
+							+(ptCirc[n].y-ptCg.y)*(ptCirc[n].y-ptCg.y)));
+		dR += temp[n];
+	}
+	dR /= PR;		//	ïΩãœîºåa
+
+	//	ïΩãœï™éUíl, Ra, RyéZèo
+	max = min = 0;
+	dRa = dDist = 0;
+	for(n=0; n<PR; n++){
+		sum = (temp[n]-dR);	//	ïŒç∑
+		dRa += fabs(sum);
+		dDist += (sum*sum);	//	äeì_ÇÃï™éUíl
+		//	PV
+		if(sum>max)			max = sum;
+		else if(sum<min)	min = sum;
+	}
+	dRa /= PR;		//	Ra
+	dRy = max-min;	//	Ry
+	dDist /= PR;	//	ïΩãœïŒç∑
+}
+
