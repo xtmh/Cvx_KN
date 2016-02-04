@@ -50,31 +50,31 @@ public:
 	void	calc()
 	{
 		int		x, y, n;
-		double	temp[PR];
-		double	sum, max, min;
+		double	dTemp[PR];
+		double	dSum, dMax, dMin;
 
 		//	ïΩãœîºåaéZèo
 		dR = 0;
 		for(n=0; n<PR; n++){
-			temp[n] = sqrt((double)((ptCirc[n].x-ptCg.x)*(ptCirc[n].x-ptCg.x)
+			dTemp[n] = sqrt((double)((ptCirc[n].x-ptCg.x)*(ptCirc[n].x-ptCg.x)
 								+(ptCirc[n].y-ptCg.y)*(ptCirc[n].y-ptCg.y)));
-			dR += temp[n];
+			dR += dTemp[n];
 		}
 		dR /= PR;		//	ïΩãœîºåa
 	
 		//	ïΩãœï™éUíl, Ra, RyéZèo
-		max = min = 0;
+		dMax = dMin = 0;
 		dRa = dDist = 0;
 		for(n=0; n<PR; n++){
-			sum = (temp[n]-dR);	//	ïŒç∑
-			dRa += fabs(sum);
-			dDist += (sum*sum);	//	äeì_ÇÃï™éUíl
+			dSum = (dTemp[n]-dR);	//	ïŒç∑
+			dRa += fabs(dSum);
+			dDist += (dSum*dSum);	//	äeì_ÇÃï™éUíl
 			//	PV
-			if(sum>max)			max = sum;
-			else if(sum<min)	min = sum;
+			if(dSum>dMax)		dMax = dSum;
+			else if(dSum<dMin)	dMin = dSum;
 		}
 		dRa /= PR;		//	Ra
-		dRy = max-min;	//	Ry
+		dRy = dMax-dMin;	//	Ry
 		dDist /= PR;	//	ïΩãœïŒç∑
 	}
 };

@@ -1583,24 +1583,40 @@ void CCveDlg::OnBnClickedAnlyz()
 void CCveDlg::imgFlat()
 {
 	int		x, y, c, n;
-	double	dRn, dRi, dRo;
-	CPoint	ptCg;
-	
-	dRi = crIn.dR;		//	ì‡åa
-	dRo = crOut.dR;		//	äOåa
-	ptCg = crIn.ptCg;	//	èdêS
+	double	dAvg, dMax, dMin;
+	double	dSum;
 
+	//	ïΩãœâÊëfíléZèo
+	n = 0;
+	dAvg = 0.0;
 	for(y=0; y<PY; y++){
 		for(x=0; x<PX; x++){
-			dRn = sqrt((double)((x-ptCg.x)*(x-ptCg.x)+(y-ptCg.y)*(y-ptCg.y)));
-			if((dRn>dRi)&&(dRn<dRo)){
-				//uSfc[x][y][0] = 255;		//	test
-				//	‹∞∏ï\ñ 
-
+			if(uBin[x][y] != 0){
+				//	‹∞∏¥ÿ±
+				dAvg += uSfc[x][y][RED];	//	âÊëfílêœéZ
+				n++;
 			}
 		}
 
 	}
+	dAvg /= (double)n;	//	ïΩãœâÊëfíl
+	//	ïΩãœï™éUíl, Ry, RaéZèo
+	dMax = dMin = 0.0;
+	ftSfc.dDist = 0.0;
+	for(y=0; y<PY; y++){
+		for(x=0; x<PX; x++){
+			if(uBin[x][y] != 0){
+				dSum = (uSfc[x][y][RED]-dAvg);			//	ïŒç∑
+				ftSfc.dRa += fabs(dSum);				//	ó›êœïŒç∑				
+				ftSfc.dDist += (ftSfc.dRa*ftSfc.dRa);	//	ó›êœï™éUíl
+				if(dSum>dMax)			dMax = dSum;
+				else if(dSum<dMin)		dMin = dSum;
+			}
+		}
+	}
+	ftSfc.dRa /= (double)n;		//	Ra
+	ftSfc.dRy = dMax-dMin;		//	Ry(PV)
+	ftSfc.dDist /= (double)n;	//	ïΩãœï™éU
 }
 
 //	â~é¸ï]âø

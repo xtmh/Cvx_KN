@@ -273,6 +273,8 @@ Version	Date	Development
 179		160204	輪郭抽出用の閾値をTH_OTL(100)で設定
 				ﾜｰｸﾏｯﾌﾟuBin[]を作成
 				imgTrim()で内外径でuBIn[]を二値化
+180		160204	imgFlat()で面内の各種ﾊﾟﾗﾒｰﾀ測定
+
 
 
 
