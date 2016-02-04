@@ -1573,10 +1573,33 @@ void CCveDlg::imgUpdate()
 void CCveDlg::OnBnClickedAnlyz()
 {
 	imgTrim();
+	imgFlat();
 	Invalidate();
 }
 
-//	‰~Œ`ÄØÐÝ¸Þ
+//	–Ê•]‰¿
+void CCveDlg::imgFlat()
+{
+	int		x, y, c, n;
+	double	dRn, dRi, dRo;
+	CPoint	ptCg;
+	
+	dRi = crIn.dR;
+	dRo = crOut.dR;
+	ptCg = crIn.ptCg;
+
+	for(y=0; y<PY; y++){
+		for(x=0; x<PX; x++){
+			dRn = sqrt((double)((x-ptCg.x)*(x-ptCg.x)+(y-ptCg.y)*(y-ptCg.y)));
+			if((dRn>dRi)&&(dRn<dRo)){
+				uSfc[x][y][0] = 255;
+			}
+		}
+
+	}
+}
+
+//	‰~Žü•]‰¿
 void CCveDlg::imgTrim()
 {
 	int		x, y, c, n;

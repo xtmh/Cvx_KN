@@ -26,6 +26,13 @@ public:
 	int		nFit[FIT_NUM];
 };
 
+class CFlt{
+public:
+	double	dDist;
+	double	dRy;
+	double	dRa;
+};
+
 //	‰~ü‰ğÍÃŞ°À¸×½
 class COtl
 {
@@ -169,7 +176,8 @@ public:
 	CPoint		ptMov;			//	Œ»İÀ•W
 	CPoint		ptD[3];			//	ŒXÎ•â³‚ÌŒ³s—ñ‚Ì‚½‚ß‚ÌÀ•W3“_
 
-	COtl		crOut, crIn;
+	COtl		crOut, crIn;	//	‰~ü‘®«
+	CFlt		ftSfc;			//	–Ê‘®«
 
 
 	void		fileOpen();
@@ -194,7 +202,8 @@ public:
 	//void		imgPeak(uchar dst[][PX][PC], uchar src[][PX][PC]);
 	void		imgPol(uchar dst[][PD][PC], uchar src[][PX][PC]);
 	double		imgFitting(double dDst[], int nSrc[], int nPk);	//	¶°ÌŞÌ¨¯Ã¨İ¸Şˆ—
-	void		imgTrim();		//	ÄØĞİ¸Ş
+	void		imgTrim();		//	‰~ü‘®«•]‰¿(“àŠOŒ`)
+	void		imgFlat();		//	–Ê‚Ì•½’R“x•]‰¿
 
 	void		makeTrig();
 	void		makeBar();
