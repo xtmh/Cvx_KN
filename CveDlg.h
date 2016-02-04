@@ -32,13 +32,46 @@ class COtl
 public:
 	CPoint	ptCg;			//	重心
 	CPoint	ptCirc[PR];		//	円周座標値
-	void	calc();			//	各種ﾊﾟﾗﾒｰﾀ算出(dDist, dRy, dRa)	
+	
 	//	calc()で算出
 	double	dR;				//	平均半径
 	double	dDist;			//	分散値
 	double	dRy;			//	Ry:最大高さ(PV値)
 	double	dRa;			//	Ra:算術平均高さ
+	
+	//	各種ﾊﾟﾗﾒｰﾀ算出(dDist, dRy, dRa)	
+	void	calc()
+	{
+		int		x, y, n;
+		double	temp[PR];
+		double	sum, max, min;
+
+		//	平均半径算出
+		dR = 0;
+		for(n=0; n<PR; n++){
+			temp[n] = sqrt((double)((ptCirc[n].x-ptCg.x)*(ptCirc[n].x-ptCg.x)
+								+(ptCirc[n].y-ptCg.y)*(ptCirc[n].y-ptCg.y)));
+			dR += temp[n];
+		}
+		dR /= PR;		//	平均半径
+	
+		//	平均分散値, Ra, Ry算出
+		max = min = 0;
+		dRa = dDist = 0;
+		for(n=0; n<PR; n++){
+			sum = (temp[n]-dR);	//	偏差
+			dRa += fabs(sum);
+			dDist += (sum*sum);	//	各点の分散値
+			//	PV
+			if(sum>max)			max = sum;
+			else if(sum<min)	min = sum;
+		}
+		dRa /= PR;		//	Ra
+		dRy = max-min;	//	Ry
+		dDist /= PR;	//	平均偏差
+	}
 };
+
 
 // CCveDlg ダイアログ
 class CCveDlg : public CDialogEx

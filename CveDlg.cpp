@@ -39,6 +39,7 @@ void MessagePump()
 }
 
 
+
 // アプリケーションのバージョン情報に使われる CAboutDlg ダイアログ
 
 class CAboutDlg : public CDialogEx
@@ -1669,34 +1670,4 @@ void CCveDlg::imgTrim()
 
 }
 
-void COtl::calc()
-{
-	int		x, y, n;
-	double	temp[PR];
-	double	sum, max, min;
-
-	//	平均半径算出
-	dR = 0;
-	for(n=0; n<PR; n++){
-		temp[n] = sqrt((double)((ptCirc[n].x-ptCg.x)*(ptCirc[n].x-ptCg.x)
-							+(ptCirc[n].y-ptCg.y)*(ptCirc[n].y-ptCg.y)));
-		dR += temp[n];
-	}
-	dR /= PR;		//	平均半径
-
-	//	平均分散値, Ra, Ry算出
-	max = min = 0;
-	dRa = dDist = 0;
-	for(n=0; n<PR; n++){
-		sum = (temp[n]-dR);	//	偏差
-		dRa += fabs(sum);
-		dDist += (sum*sum);	//	各点の分散値
-		//	PV
-		if(sum>max)			max = sum;
-		else if(sum<min)	min = sum;
-	}
-	dRa /= PR;		//	Ra
-	dRy = max-min;	//	Ry
-	dDist /= PR;	//	平均偏差
-}
 
