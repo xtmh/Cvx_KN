@@ -130,7 +130,8 @@ public:
 	uchar		(*uBar)[PZ][PY][PC];		//	ｶﾗｰﾊﾞｰ
 	uchar		(*uDsp)[PY][PC];		//	ｶﾗｰ画像ﾒﾓﾘ
 	//uchar		(*uTmp)[PY][PC];
-	uchar		(*uSfc)[PX][PC];		//	上面視画像用ﾒﾓﾘ
+	uchar		(*uSfc)[PY][PC];		//	上面視画像用ﾒﾓﾘ
+	uchar		(*uBin)[PY];			//	ﾜｰｸﾏｯﾌﾟ(内外径規定)
 
 	//uchar		(*uOct)[PY][PZ];		//	ﾌｧｲﾙからの読み出し用ﾒﾓﾘ
 	uchar		(*uFrm)[PZ][PY];		//	全ﾌﾚｰﾑ保存用ﾒﾓﾘ

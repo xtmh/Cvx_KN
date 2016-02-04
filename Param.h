@@ -2,7 +2,7 @@
 //	param.h
 ////////////////////////
 
-#define		VER			178
+#define		VER			179
 
 #define		Z_RVS						//	Z²”½“]
 
@@ -55,3 +55,6 @@
 #define		Y1			512
 #define		Y2			780
 #define		Y3			130
+
+//	—ÖŠs’Šo
+#define		TH_OTL		100				//	—ÖŠs“_ŒŸoè‡’l

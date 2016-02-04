@@ -263,8 +263,9 @@ BOOL CCveDlg::OnInitDialog()
 	//	画像用ﾒﾓﾘ確保
 	//uTmp = new uchar[PZ][PY][PC];	memset(uTmp, 0, PS);	//	1.5M	
 	uDsp = new uchar[PZ][PY][PC];	memset(uDsp, 0, PS);	//	1.5M	断層画像(上)表示用ﾒﾓﾘ	
-	uSfc = new uchar[PY][PX][PC];	memset(uSfc, 0, 2*PS);	//	3M		ｽﾗｲｽ画像(下)表示用ﾒﾓﾘ
+	uSfc = new uchar[PX][PY][PC];	memset(uSfc, 0, 2*PS);	//	3M		ｽﾗｲｽ画像(下)表示用ﾒﾓﾘ
 	uBar = new uchar[2][PZ][PY][PC];memset(uBar, 0, 2*PS);	//	3M		ｶﾗｰﾊﾞｰ表示用ﾒﾓﾘ
+	uBin = new uchar[PX][PY];		memset(uBin, 0, PX*PY);	//	1M		ﾜｰｸﾏｯﾌﾟ	
 
 	//	画像表示ﾚﾃﾞｨﾌﾗｸﾞ
 	bImg = true;		//	uDspとuSfcの用意ができたことを示すﾌﾗｸﾞ
@@ -386,6 +387,7 @@ void CCveDlg::OnDestroy()
 	delete[]	uBar;
 	delete[]	uDsp;
 	delete[]	uSfc;
+	delete[]	uBin;
 
 	//delete[]	uTmp;
 	delete[]	uFrm;
@@ -1584,15 +1586,17 @@ void CCveDlg::imgFlat()
 	double	dRn, dRi, dRo;
 	CPoint	ptCg;
 	
-	dRi = crIn.dR;
-	dRo = crOut.dR;
-	ptCg = crIn.ptCg;
+	dRi = crIn.dR;		//	内径
+	dRo = crOut.dR;		//	外径
+	ptCg = crIn.ptCg;	//	重心
 
 	for(y=0; y<PY; y++){
 		for(x=0; x<PX; x++){
 			dRn = sqrt((double)((x-ptCg.x)*(x-ptCg.x)+(y-ptCg.y)*(y-ptCg.y)));
 			if((dRn>dRi)&&(dRn<dRo)){
-				uSfc[x][y][0] = 255;
+				//uSfc[x][y][0] = 255;		//	test
+				//	ﾜｰｸ表面
+
 			}
 		}
 
@@ -1606,11 +1610,9 @@ void CCveDlg::imgTrim()
 	int		col = RED;
 	int		nSumN, nSumX, nSumY;
 	int		nCnt;
-	double	dR1, dR2, dX, dY, dRad;
+	double	dRn, dX, dY, dRad;
 	double	dLen;
 	double	dSita;
-	double	dXi, dXo, dYi, dYo;
-	double	dRi, dRo;		//	平均径
 
 	dSita = 2*PI/PR;
 	nSumN = nSumX = nSumY = 0;
@@ -1637,8 +1639,8 @@ void CCveDlg::imgTrim()
 			dX = dLen * cos(dRad) + crIn.ptCg.x;
 			dY = dLen * sin(dRad) + crIn.ptCg.y;
 			if((dX>0)&&(dX<PX)&&(dY>0)&&(dY<PY)){
-				if(uSfc[(int)dX][(int)dY][col] > 100){
-					uSfc[(int)dX][(int)dY][col] = 255;
+				if(uSfc[(int)dX][(int)dY][col] > TH_OTL){
+					//uSfc[(int)dX][(int)dY][col] = 255;
 					break;
 				}
 			}
@@ -1650,8 +1652,8 @@ void CCveDlg::imgTrim()
 			dX = dLen * cos(dRad) + crOut.ptCg.x;
 			dY = dLen * sin(dRad) + crOut.ptCg.y;
 			if((dX>0)&&(dX<PX)&&(dY>0)&&(dY<PY)){
-				if(uSfc[(int)dX][(int)dY][col] > 100){
-					uSfc[(int)dX][(int)dY][col] = 255;
+				if(uSfc[(int)dX][(int)dY][col] > TH_OTL){
+					//uSfc[(int)dX][(int)dY][col] = 255;
 					break;
 				}
 			}
@@ -1659,37 +1661,26 @@ void CCveDlg::imgTrim()
 		crOut.ptCirc[nCnt] = CPoint((int)dX, (int)dY);	//	輪郭点座標群
 		nCnt++;		//	ｶｳﾝﾀｰ
 	}
+	
 
 	//	輪郭ﾃﾞｰﾀ分析(dDist, dRy, dRa)
 	crIn.calc();
 	crOut.calc();
 
-	n = 0;
+	//	ﾜｰｸ検出
+	memset(uBin, 0, PX*PY);	
+	for(y=0; y<PY; y++){
+		for(x=0; x<PX; x++){
+			dRn = sqrt((double)((x-crIn.ptCg.x)*(x-crIn.ptCg.x)+(y-crIn.ptCg.y)*(y-crIn.ptCg.y)));
+			if((dRn>crIn.dR)&&(dRn<crOut.dR)){
+				uSfc[x][y][0] = 255;		//	test
+				//	ﾜｰｸ表面
+				uBin[x][y] = 255;
 
-	/*
-	//	輪郭分析
-	dRi = dRo = 0.0;
-	//dXi = dXo = dYi = dYo = 0.0;
-	for(n=0; n<PR; n++){
-		//	重心からの距離累積
-		dRi += sqrt((ptIn[n].x-dAvgX)*(ptIn[n].x-dAvgX)+(ptIn[n].y-dAvgY)*(ptIn[n].y-dAvgY));
-		dRo += sqrt((ptOut[n].x-dAvgX)*(ptOut[n].x-dAvgX)+(ptOut[n].y-dAvgY)*(ptOut[n].y-dAvgY));
-	}
-	//	平均半径
-	dRi /= PR;
-	dRo /= PR;
-	//	平均径のCircle
-	for(dRad=-PI; dRad<PI; dRad+=dSita){
-		dX = dRi * cos(dRad) + dAvgX;
-		dY = dRi * sin(dRad) + dAvgY;
-		uSfc[(int)dX][(int)dY][GREEN] = 255;
-		dX = dRo * cos(dRad) + dAvgX;
-		dY = dRo * sin(dRad) + dAvgY;
-		uSfc[(int)dX][(int)dY][GREEN] = 255;
-	}
+			}
+		}
 
-	for(n=0; n<PR; n++){
-	*/
+	}
 
 }
 
