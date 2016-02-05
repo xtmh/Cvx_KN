@@ -167,6 +167,7 @@ public:
 	double		dTrg[PY][2];
 
 	CString		strFolderPath;
+	CString		strSfcImg;				//	–Ê‰æ‘œÌ§²Ù–¼
 
 	CRect		rcCirc;
 	CCirc		m_Circ;

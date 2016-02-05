@@ -561,6 +561,7 @@ void CCveDlg::fileOpen()
 	CFileDialog	dlg(TRUE, "*.oct", NULL, OFN_ALLOWMULTISELECT|OFN_EXPLORER, "oct√ﬁ∞¿Ãß≤Ÿ (*.oct)|*.oct|raw√ﬁ∞¿Ãß≤Ÿ (*.raw)|*.raw||");
 
 	if(dlg.DoModal() == IDOK){
+		strSfcImg = dlg.GetFileName();
 		strFolderPath = dlg.GetPathName();
 		//	Ãß≤Ÿägí£éqÇ≈èàóùÇï™äÚ
 		if(dlg.GetFileExt().MakeLower()=="oct"){
@@ -1721,9 +1722,10 @@ void CCveDlg::csvOut()
 	CString	str;
 
 	f.Open("c:\\temp\\cvx\\mt_prm.csv", CFile::modeWrite|CFile::modeCreate);
-	str.Format("SAvg,SDist,SRa,SRy,IR,IDist,IRa,IRy,OR,ODist,ORa,ORy\n");
+	str.Format("File name,SAvg,SDist,SRa,SRy,IR,IDist,IRa,IRy,OR,ODist,ORa,ORy\n");
 	f.Write(str, str.GetLength());
-	str.Format("%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\n", 
+	str.Format("%s,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\n", 
+		strSfcImg,
 		ftSfc.dAvg,ftSfc.dDist, ftSfc.dRa,ftSfc.dRy,
 		crIn.dR,crIn.dDist, crIn.dRa, crIn.dRy,
 		crOut.dR,crOut.dDist, crOut.dRa, crOut.dRy);
@@ -1740,6 +1742,7 @@ void CCveDlg::OnBnClickedImgOpen()
 	CFileDialog	dlg(TRUE, "*.jpg", NULL, OFN_ALLOWMULTISELECT|OFN_EXPLORER, "jpg√ﬁ∞¿Ãß≤Ÿ (*.jpg)|*.jpg");
 
 	if(dlg.DoModal() == IDOK){
+		strSfcImg = dlg.GetFileName();
 		imgSfcOpen(dlg.GetPathName());
 		//	âêÕ
 		OnBnClickedAnlyz();
