@@ -2,7 +2,7 @@
 //	param.h
 ////////////////////////
 
-#define		VER			181
+#define		VER			182
 
 #define		Z_RVS						//	ZŽ²”½“]
 

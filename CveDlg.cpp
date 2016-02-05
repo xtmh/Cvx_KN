@@ -203,6 +203,7 @@ BEGIN_MESSAGE_MAP(CCveDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_OCT, &CCveDlg::OnBnClickedOct)
 	ON_BN_CLICKED(IDC_INCL, &CCveDlg::OnBnClickedIncl)
 	ON_BN_CLICKED(IDC_ANLYZ, &CCveDlg::OnBnClickedAnlyz)
+	ON_BN_CLICKED(IDC_IMG_OPEN, &CCveDlg::OnBnClickedImgOpen)
 END_MESSAGE_MAP()
 
 
@@ -624,7 +625,20 @@ void CCveDlg::OnBnClickedRef()
 	bRef = false;
 }
 
-//	Ãß≤Ÿµ∞Ãﬂ›èàóù
+//	ñ âÊëú√ﬁ∞¿µ∞Ãﬂ›èàóù
+void CCveDlg::imgSfcOpen(CString s)
+{
+	//	ï\é¶Ç…îΩâf
+	m_strPathName = s;	//	Ã´Ÿ¿ﬁ∞ ﬂΩÇï\é¶
+	//	âÊëú€∞ƒﬁ
+	img.Load(s);
+	pBmp = CBitmap::FromHandle(img);
+	pBmp->GetBitmap(&bmp);
+	pb = (uchar*)bmp.bmBits;
+	memcpy(uSfc, pb, PX*PY*PC);
+}
+
+//	OCT√ﬁ∞¿Ãß≤Ÿµ∞Ãﬂ›èàóù
 void CCveDlg::imgOpen(CString s, bool bRaw)
 {
 	CWaitCursor	cur;
@@ -636,9 +650,6 @@ void CCveDlg::imgOpen(CString s, bool bRaw)
 	int			(*nSum)[PX];
 	int			tmp;
 	uchar		uMax;
-
-	//nSum = new int[PY][PX];
-	//memset(nSum, 0, PX*PY*sizeof(int));
 
 	//	Ãß≤Ÿ€∞ƒﬁ
 	m_strPathName = s;	//	Ã´Ÿ¿ﬁ∞ ﬂΩÇï\é¶
@@ -1574,6 +1585,9 @@ void CCveDlg::imgUpdate()
 //	âêÕèàóù(ì¡í•ó íäèo)
 void CCveDlg::OnBnClickedAnlyz()
 {
+	crIn.reset();
+	crOut.reset();
+	ftSfc.reset();
 	imgTrim();
 	imgFlat();
 	csvOut();
@@ -1584,30 +1598,29 @@ void CCveDlg::OnBnClickedAnlyz()
 void CCveDlg::imgFlat()
 {
 	int		x, y, c, n;
-	double	dAvg, dMax, dMin;
+	double	dMax, dMin;
 	double	dSum;
 
 	//	ïΩãœâÊëfíléZèo
 	n = 0;
-	dAvg = 0.0;
 	for(y=0; y<PY; y++){
 		for(x=0; x<PX; x++){
 			if(uBin[x][y] != 0){
 				//	‹∞∏¥ÿ±
-				dAvg += uSfc[x][y][RED];	//	âÊëfílêœéZ
+				ftSfc.dAvg += uSfc[x][y][RED];	//	âÊëfílêœéZ
 				n++;
 			}
 		}
 
 	}
-	dAvg /= (double)n;	//	ïΩãœâÊëfíl
+	ftSfc.dAvg /= (double)n;	//	ïΩãœâÊëfíl
 	//	ïΩãœï™éUíl, Ry, RaéZèo
 	dMax = dMin = 0.0;
 	ftSfc.dDist = 0.0;
 	for(y=0; y<PY; y++){
 		for(x=0; x<PX; x++){
 			if(uBin[x][y] != 0){
-				dSum = (uSfc[x][y][RED]-dAvg);			//	ïŒç∑
+				dSum = (uSfc[x][y][RED]-ftSfc.dAvg);			//	ïŒç∑
 				ftSfc.dRa += fabs(dSum);				//	ó›êœïŒç∑				
 				ftSfc.dDist += (dSum*dSum);	//	ó›êœï™éUíl
 				if(dSum>dMax)			dMax = dSum;
@@ -1708,13 +1721,27 @@ void CCveDlg::csvOut()
 	CString	str;
 
 	f.Open("c:\\temp\\cvx\\mt_prm.csv", CFile::modeWrite|CFile::modeCreate);
-	str.Format("SDist,SRa,SRy,IDist,IRa,IRy,ODist,ORa,ORy\n");
+	str.Format("SAvg,SDist,SRa,SRy,IR,IDist,IRa,IRy,OR,ODist,ORa,ORy\n");
 	f.Write(str, str.GetLength());
 	str.Format("%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\n", 
-		ftSfc.dDist, ftSfc.dRa,ftSfc.dRy,
-		crIn.dDist, crIn.dRa, crIn.dRy,
-		crOut.dDist, crOut.dRa, crOut.dRy);
+		ftSfc.dAvg,ftSfc.dDist, ftSfc.dRa,ftSfc.dRy,
+		crIn.dR,crIn.dDist, crIn.dRa, crIn.dRy,
+		crOut.dR,crOut.dDist, crOut.dRa, crOut.dRy);
 	f.Write(str, str.GetLength());
 	f.Close();
 }
 
+//	ñ âÊëú(jpg)µ∞Ãﬂ›
+void CCveDlg::OnBnClickedImgOpen()
+{
+	CWaitCursor	cur;
+	CString		strFileName, strFilePath;
+
+	CFileDialog	dlg(TRUE, "*.jpg", NULL, OFN_ALLOWMULTISELECT|OFN_EXPLORER, "jpg√ﬁ∞¿Ãß≤Ÿ (*.jpg)|*.jpg");
+
+	if(dlg.DoModal() == IDOK){
+		imgSfcOpen(dlg.GetPathName());
+		//	âêÕ
+		OnBnClickedAnlyz();
+	}
+}

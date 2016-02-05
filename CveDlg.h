@@ -28,9 +28,14 @@ public:
 
 class CFlt{
 public:
-	double	dDist;
-	double	dRy;
-	double	dRa;
+	double	dAvg;			//	•½‹Ï’l
+	double	dDist;			//	•ªU’l
+	double	dRy;			//	Ry
+	double	dRa;			//	Ra
+	void reset()
+	{
+		dAvg = dDist = dRy = dRa = 0.0;
+	}
 };
 
 //	‰~ü‰ğÍÃŞ°À¸×½
@@ -46,6 +51,13 @@ public:
 	double	dRy;			//	Ry:Å‘å‚‚³(PV’l)
 	double	dRa;			//	Ra:Zp•½‹Ï‚‚³
 	
+	void reset()
+	{
+		ptCg = CPoint(0, 0);
+		memset(ptCirc, 0, sizeof(CPoint)*PR);
+		dR = dDist = dRy = dRa = 0.0;
+	}
+
 	//	ŠeíÊß×Ò°ÀZo(dDist, dRy, dRa)	
 	void	calc()
 	{
@@ -198,6 +210,7 @@ public:
 	void		imgCal(uchar img[][PX][PC]);
 	void		imgLmt(uchar ref[][PX][PC], uchar dst[][PX][PC]);
 	void		imgOpen(CString	s, bool sw=true);
+	void		imgSfcOpen(CString s);
 	void		imgCalc();
 	void		imgMake();		//	‰¼‰æ‘œ¶¬
 	//void		imgPeak(uchar dst[][PX][PC], uchar src[][PX][PC]);
@@ -267,4 +280,5 @@ public:
 	BOOL m_bIncl;
 	afx_msg void OnBnClickedIncl();
 	afx_msg void OnBnClickedAnlyz();
+	afx_msg void OnBnClickedImgOpen();
 };
