@@ -28,13 +28,15 @@ public:
 
 class CFlt{
 public:
+	double	dMax;			//	最大値
+	double	dMin;			//	最小値
 	double	dAvg;			//	平均値
 	double	dDist;			//	分散値
 	double	dRy;			//	Ry
 	double	dRa;			//	Ra
 	void reset()
 	{
-		dAvg = dDist = dRy = dRa = 0.0;
+		dMax = dMin = dAvg = dDist = dRy = dRa = 0.0;
 	}
 };
 
@@ -46,6 +48,8 @@ public:
 	CPoint	ptCirc[PR];		//	円周座標値
 	
 	//	calc()で算出
+	double	dMax;			//	最大値
+	double	dMin;			//	最小値
 	double	dR;				//	平均半径
 	double	dDist;			//	分散値
 	double	dRy;			//	Ry:最大高さ(PV値)
@@ -63,7 +67,7 @@ public:
 	{
 		int		x, y, n;
 		double	dTemp[PR];
-		double	dSum, dMax, dMin;
+		double	dSum;
 
 		//	平均半径算出
 		dR = 0;

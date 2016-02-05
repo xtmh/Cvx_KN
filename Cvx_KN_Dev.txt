@@ -279,6 +279,9 @@ Version	Date	Development
 				CFltにdAvgﾒﾝﾊﾞ追加
 				csvOut()で平均値出力対応
 183		160205	ﾛｰﾄﾞしたﾌｧｲﾙ名表示
+184		160205	CFltにdMaxとdMinﾒﾝﾊﾞ追加
+				csvOut()で面ﾃﾞｰﾀの最大最小値出力対応
+
 
 
 				

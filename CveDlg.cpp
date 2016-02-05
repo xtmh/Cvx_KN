@@ -1599,7 +1599,6 @@ void CCveDlg::OnBnClickedAnlyz()
 void CCveDlg::imgFlat()
 {
 	int		x, y, c, n;
-	double	dMax, dMin;
 	double	dSum;
 
 	//	•½‹Ï‰æ‘f’lZo
@@ -1616,22 +1615,21 @@ void CCveDlg::imgFlat()
 	}
 	ftSfc.dAvg /= (double)n;	//	•½‹Ï‰æ‘f’l
 	//	•½‹Ï•ªU’l, Ry, RaZo
-	dMax = dMin = 0.0;
 	ftSfc.dDist = 0.0;
 	for(y=0; y<PY; y++){
 		for(x=0; x<PX; x++){
 			if(uBin[x][y] != 0){
-				dSum = (uSfc[x][y][RED]-ftSfc.dAvg);			//	•Î·
+				dSum = (uSfc[x][y][RED]-ftSfc.dAvg);	//	•Î·
 				ftSfc.dRa += fabs(dSum);				//	—İÏ•Î·				
-				ftSfc.dDist += (dSum*dSum);	//	—İÏ•ªU’l
-				if(dSum>dMax)			dMax = dSum;
-				else if(dSum<dMin)		dMin = dSum;
+				ftSfc.dDist += (dSum*dSum);				//	—İÏ•ªU’l
+				if(dSum>ftSfc.dMax)			ftSfc.dMax = dSum;
+				else if(dSum<ftSfc.dMin)	ftSfc.dMin = dSum;
 			}
 		}
 	}
-	ftSfc.dRa /= (double)n;		//	Ra
-	ftSfc.dRy = dMax-dMin;		//	Ry(PV)
-	ftSfc.dDist /= (double)n;	//	•½‹Ï•ªU
+	ftSfc.dRa /= (double)n;				//	Ra
+	ftSfc.dRy = ftSfc.dMax-ftSfc.dMin;	//	Ry(PV)
+	ftSfc.dDist /= (double)n;			//	•½‹Ï•ªU
 }
 
 //	‰~ü•]‰¿
@@ -1712,7 +1710,6 @@ void CCveDlg::imgTrim()
 		}
 
 	}
-
 }
 
 //	Êß×Ò°Ào—Í
@@ -1722,11 +1719,12 @@ void CCveDlg::csvOut()
 	CString	str;
 
 	f.Open("c:\\temp\\cvx\\mt_prm.csv", CFile::modeWrite|CFile::modeCreate);
-	str.Format("File name,SAvg,SDist,SRa,SRy,IR,IDist,IRa,IRy,OR,ODist,ORa,ORy\n");
+	str.Format("File name,SAvg,SDist,SRa,SRy,SMax,SMin,IR,IDist,IRa,IRy,OR,ODist,ORa,ORy\n");
 	f.Write(str, str.GetLength());
-	str.Format("%s,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\n", 
+	str.Format("%s,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\n", 
 		strSfcImg,
 		ftSfc.dAvg,ftSfc.dDist, ftSfc.dRa,ftSfc.dRy,
+		ftSfc.dMax,ftSfc.dMin,
 		crIn.dR,crIn.dDist, crIn.dRa, crIn.dRy,
 		crOut.dR,crOut.dDist, crOut.dRa, crOut.dRy);
 	f.Write(str, str.GetLength());
@@ -1744,7 +1742,7 @@ void CCveDlg::OnBnClickedImgOpen()
 	if(dlg.DoModal() == IDOK){
 		strSfcImg = dlg.GetFileName();
 		imgSfcOpen(dlg.GetPathName());
-		//	‰ğÍ
+		//	“Á’¥—Ê’Šoˆ—
 		OnBnClickedAnlyz();
 	}
 }
