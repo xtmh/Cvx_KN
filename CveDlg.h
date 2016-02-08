@@ -170,7 +170,7 @@ public:
 	double		dPkAvg;
 	double		dTrg[PY][2];
 
-	CString		strFolderPath;
+	CString		strFolderPath;			//	Ì§²ÙÌ«ÙÀŞ‚ÌÌÙÊß½
 	CString		strSfcImg;				//	–Ê‰æ‘œÌ§²Ù–¼
 
 	CRect		rcCirc;

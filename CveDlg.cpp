@@ -1485,8 +1485,15 @@ void CCveDlg::OnBnClickedSave()
 	img.Attach((HBITMAP)bmpForSave);
 
 	// [名前を付けて保存]ダイアログ
+#ifdef BMP_SAVE
+	//	Bitmapで保存
+	CFileDialog	dlg(FALSE, ".bmp", "View", OFN_OVERWRITEPROMPT,
+							"画像ファイル (*.bmp)|*.bmp|全てのファイル(*.*)|*.*||");
+#else
+	//	jpgで保存
 	CFileDialog	dlg(FALSE, ".jpg", "View", OFN_OVERWRITEPROMPT,
 							"画像ファイル (*.jpg)|*.jpg|全てのファイル(*.*)|*.*||");
+#endif // BMP_SAVE
 
 	if(dlg.DoModal() == IDOK){
 		CString strMsg;
@@ -1669,7 +1676,9 @@ void CCveDlg::imgTrim()
 			dY = dLen * sin(dRad) + crIn.ptCg.y;
 			if((dX>0)&&(dX<PX)&&(dY>0)&&(dY<PY)){
 				if(uSfc[(int)dX][(int)dY][col] > TH_OTL){
-					//uSfc[(int)dX][(int)dY][col] = 255;
+#ifdef TH_COL
+					uSfc[(int)dX][(int)dY][col] = 255;
+#endif
 					break;
 				}
 			}
@@ -1682,7 +1691,9 @@ void CCveDlg::imgTrim()
 			dY = dLen * sin(dRad) + crOut.ptCg.y;
 			if((dX>0)&&(dX<PX)&&(dY>0)&&(dY<PY)){
 				if(uSfc[(int)dX][(int)dY][col] > TH_OTL){
-					//uSfc[(int)dX][(int)dY][col] = 255;
+#ifdef TH_COL
+					uSfc[(int)dX][(int)dY][col] = 255;
+#endif // TH_COL
 					break;
 				}
 			}
@@ -1702,7 +1713,9 @@ void CCveDlg::imgTrim()
 		for(x=0; x<PX; x++){
 			dRn = sqrt((double)((x-crIn.ptCg.x)*(x-crIn.ptCg.x)+(y-crIn.ptCg.y)*(y-crIn.ptCg.y)));
 			if((dRn>crIn.dR)&&(dRn<crOut.dR)){
-				uSfc[x][y][0] = 255;		//	test
+#ifdef TH_COL
+				uSfc[x][y][BLUE] = 255;		//	test
+#endif
 				//	ﾜｰｸ表面
 				uBin[x][y] = 255;
 
