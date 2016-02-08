@@ -92,6 +92,7 @@ void CCirc::OnPaint()
 						0, 0, PX, PY,				//	元画像の座標
 						d->uSfc, &d->bp,			//	画像データ
 						DIB_RGB_COLORS,	SRCCOPY);
+		//	傾斜面補正利用点描画
 		if(d->m_bIncl){
 			for(int p=0; p<3; p++){
 				dc.Rectangle(	(d->ptD[p].x-5)/EXPND, (d->ptD[p].y-5)/EXPND, 
@@ -120,9 +121,10 @@ void CCirc::OnPaint()
 						(UM_RATIO*d->pkDepth[d->ptMov.x][d->ptMov.y].dSmp));
 #endif
 	dc.SelectObject(pOldPen);
+	CString	s;
+	//	ﾋﾟｰｸ検出完了
 	if(d->m_bPeak){
-		CString	s;
-		dc.SetTextColor(RGB(255, 255, 255)); //	pink
+		dc.SetTextColor(RGB(255, 255, 255)); //	white
 		pOldFont = (CFont*)dc.SelectObject(&Font2);
 		s.Format("+%dum", d->nViewRange);
 		dc.TextOut(5, 5, s);
@@ -131,6 +133,12 @@ void CCirc::OnPaint()
 		dc.TextOut(5, 250, s);
 		s.Format("-%dum", d->nViewRange);
 		dc.TextOut(5, 498, s);
+	}
+	//	特徴分析処理完了
+	if(d->bAnlyz){
+		dc.SetTextColor(RGB(150, 150, 255)); //	white
+		s.Format("Analyzed.");
+		dc.TextOut(10, 30, s);
 	}
 	d->UpdateData(FALSE);
 }

@@ -2,7 +2,7 @@
 //	param.h
 ////////////////////////
 
-#define		VER			186
+#define		VER			187
 
 #define		BMP_SAVE				//	これを定義すると面画像をbmpで保存する
 
@@ -70,5 +70,5 @@
 
 
 //	輪郭抽出
-#define		TH_COL					//	これを定義すると解析結果に着色
+//#define		TH_COL					//	これを定義すると解析結果に着色
 #define		TH_OTL		50//100		//	輪郭点検出閾値

@@ -247,6 +247,7 @@ BOOL CCveDlg::OnInitDialog()
 	bRef = false;
 	bRcv = false;	//	湾曲補正完了ﾌﾗｸﾞを無効化
 	bOrg = false;	//	原寸表示ﾌﾗｸﾞ
+	bAnlyz = false;	//	分析完了ﾌﾗｸﾞ
 	nSlcPos = IMG_OFS;
 
 	//	ComboBox初期化
@@ -525,16 +526,16 @@ HCURSOR CCveDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-//	RAWﾌｧｲﾙｵｰﾌﾟﾝ
-void CCveDlg::OnBnClickedOpen()
-{
-	fileOpen();
-}
-
 //	OCTﾃﾞｰﾀを開く
 void CCveDlg::OnBnClickedOct()
 {
 //	fileOpen(false);
+}
+
+//	RAWﾌｧｲﾙｵｰﾌﾟﾝ
+void CCveDlg::OnBnClickedOpen()
+{
+	fileOpen();
 }
 
 //	ﾃﾞｰﾀﾌｧｲﾙｵｰﾌﾟﾝと補正一括処理
@@ -549,13 +550,14 @@ void CCveDlg::fileOpen()
 	dTm = GetPassTimeWindow();
 	UpdateData();				//	値取得
 	bRcv = false;				//	無補正ﾌﾗｸﾞ
-	//m_bCurv = m_bIncl = true;	//	ﾃﾞｰﾀﾌｧｲﾙは湾曲補正・傾斜補正ありの状態で開く
 	m_bCurv = true;				//	ﾃﾞｰﾀﾌｧｲﾙは湾曲補正ありの状態で開く
+	m_bIncl = false;			//	傾斜面補正は初期には不実施
 	UpdateData(FALSE);			//	値設定
 
 	CFileDialog	dlg(TRUE, "*.oct", NULL, OFN_ALLOWMULTISELECT|OFN_EXPLORER, "octﾃﾞｰﾀﾌｧｲﾙ (*.oct)|*.oct|rawﾃﾞｰﾀﾌｧｲﾙ (*.raw)|*.raw||");
 
 	if(dlg.DoModal() == IDOK){
+		bAnlyz = false;
 		strSfcImg = dlg.GetFileName();
 		strFolderPath = dlg.GetPathName();
 		//	ﾌｧｲﾙ拡張子で処理を分岐
@@ -595,17 +597,18 @@ void CCveDlg::fileOpen()
 			m_strSts.Format("補正値 Ready");
 		}else{
 			//	評価用の処理
-			imgMeas();		//	試料計測				dSmp <- dCal, dSub	<< dCal <- dCrv, dAvg
-			imgIncl();		//	傾斜面補正値(dInc)算出	dInc <- dSmp
+			imgMeas();			//	試料計測				dSmp <- dCal, dSub	<< dCal <- dCrv, dAvg
+			//imgIncl();			//	傾斜面補正値(dInc)算出	dInc <- dSmp
 		}
-		imgSurface();	//	面画像生成					nOrg <- dSmp, dInc
+		imgSurface();		//	面画像生成					nOrg <- dSmp, dInc
 
 		//////////////////////////////////////////////////////////////////////////////
 		m_strPathName.Format("%s", strFolderPath);
 		UpdateData(FALSE);
 	}
-	imgChg();		//	Y-Z断面生成		uDsp <- uFro or uFrm
-	imgSlc();		//	X-Y断面生成		uSfc <- nOrg or uFro or uFrm
+	imgChg();			//	Y-Z断面生成		uDsp <- uFro or uFrm
+	imgSlc();			//	X-Y断面生成		uSfc <- nOrg or uFro or uFrm
+	OnBnClickedAnlyz();	//	特徴分析				use uSfc
 	Invalidate(FALSE);
 
 	m_strDet.Format("%.3f[ms]", GetPassTimeWindow()-dTm);
@@ -1337,9 +1340,15 @@ void CCveDlg::imgIncl()
 	double	buf;
 
 	//	傾斜補正座標初期化
-	ptD[0] = CPoint(X1, Y1);
-	ptD[1] = CPoint(X2, Y2);
-	ptD[2] = CPoint(X3, Y3);
+	if(bAnlyz){
+		ptD[0] = CPoint((crIn.ptCirc[100].x+crOut.ptCirc[100].x)/2, (crIn.ptCirc[100].y+crOut.ptCirc[100].y)/2);
+		ptD[1] = CPoint((crIn.ptCirc[400].x+crOut.ptCirc[400].x)/2, (crIn.ptCirc[400].y+crOut.ptCirc[400].y)/2);
+		ptD[2] = CPoint((crIn.ptCirc[700].x+crOut.ptCirc[700].x)/2, (crIn.ptCirc[700].y+crOut.ptCirc[700].y)/2);
+	}else{
+		ptD[0] = CPoint(X1, Y1);
+		ptD[1] = CPoint(X2, Y2);
+		ptD[2] = CPoint(X3, Y3);
+	}
 
 	//	元ﾃﾞｰﾀの代入
 	double	dT[3][3] = {0};
@@ -1577,6 +1586,8 @@ void CCveDlg::OnBnClickedLz4()
 void CCveDlg::OnBnClickedIncl()
 {
 	UpdateData();
+	if(m_bIncl)
+		imgIncl();
 	imgUpdate();
 }
 
@@ -1598,6 +1609,7 @@ void CCveDlg::OnBnClickedAnlyz()
 	imgFlat();
 	csvOut();
 	Invalidate();
+	bAnlyz = true;	//	分析完了(ここでだけtrue)
 }
 
 //	面評価
@@ -1753,6 +1765,7 @@ void CCveDlg::OnBnClickedImgOpen()
 	CFileDialog	dlg(TRUE, "*.jpg", NULL, OFN_ALLOWMULTISELECT|OFN_EXPLORER, "jpgﾃﾞｰﾀﾌｧｲﾙ (*.jpg)|*.jpg");
 
 	if(dlg.DoModal() == IDOK){
+		bAnlyz = false;
 		strSfcImg = dlg.GetFileName();
 		imgSfcOpen(dlg.GetPathName());
 		//	特徴量抽出処理

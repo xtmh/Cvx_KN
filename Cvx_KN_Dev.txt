@@ -285,8 +285,13 @@ Version	Date	Development
 186		160208	ŒXŽÎ–Ê•â³‚ª‚Å‚«‚é‚æ‚¤‚ÉÀ•WC³
 				imgFlat()‚É‚¨‚¯‚édMinŽæ“¾Žž‚É0‚ÍœŠO
 				ŒXŽÎ•â³À•W‰Šú‰»‚ðimgIncl()‚ÖˆÚ“®
-187		
-				
+187		160208	“Á’¥•ªÍŠ®—¹Ì×¸Þ‚ð—pˆÓ
+				Ì§²Ùµ°ÌßÝŽž‚É‰~Žü•ªÍˆ—‚ðŽÀŽ{‚·‚é‚æ‚¤‚ÉC³
+				Ì§²Ùµ°ÌßÝŽž‚ÉŒXŽÎ–Ê•â³ˆ—‚ðŽÀŽ{‚µ‚È‚¢‚æ‚¤‚ÉC³
+				ŒXŽÎ–Ê•â³‚ÌÁª¯¸ÎÞ¯¸½‚ÅimgIncl()‚ðŽÀŽ{
+
+
+
 
 
 

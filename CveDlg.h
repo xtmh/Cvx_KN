@@ -189,6 +189,7 @@ public:
 	bool		bImg;
 	bool		bRcv;			//	•â³Š®—¹Ì×¸Ş
 	bool		bOrg;			//	Œ´¡•\¦
+	bool		bAnlyz;			//	“Á’¥•ªÍŠ®—¹Ì×¸Ş
 
 	CPoint		ptPos;			//	¸Ø¯¸À•W
 	CPoint		ptMov;			//	Œ»İÀ•W
