@@ -249,11 +249,6 @@ BOOL CCveDlg::OnInitDialog()
 	bOrg = false;	//	Œ´¡•\¦Ì×¸Ş
 	nSlcPos = IMG_OFS;
 
-	//	ŒXÎ•â³À•W‰Šú‰»
-	ptD[0] = CPoint(X1, Y1);
-	ptD[1] = CPoint(X2, Y2);
-	ptD[2] = CPoint(X3, Y3);
-
 	//	ComboBox‰Šú‰»
 	nViewRange = UM_RANGE;	//	20um
 	m_xcRange.SetCurSel(2);	//
@@ -1341,6 +1336,11 @@ void CCveDlg::imgIncl()
 	double	dQ[3] = {0};
 	double	buf;
 
+	//	ŒXÎ•â³À•W‰Šú‰»
+	ptD[0] = CPoint(X1, Y1);
+	ptD[1] = CPoint(X2, Y2);
+	ptD[2] = CPoint(X3, Y3);
+
 	//	Œ³ÃŞ°À‚Ì‘ã“ü
 	double	dT[3][3] = {0};
 	double	dA[3][3] = {{ptD[0].x, ptD[0].y, 1},
@@ -1351,8 +1351,6 @@ void CCveDlg::imgIncl()
 		dZ[i] = pkDepth[ptD[i].y][ptD[i].x].dSmp;
 	}
 	/**/
-	
-
 	
 	for(n=0; n<3; n++){
 		ptAvg(dQ, ptD[n]);
