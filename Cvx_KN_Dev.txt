@@ -282,6 +282,8 @@ Version	Date	Development
 184		160205	CFltにdMaxとdMinﾒﾝﾊﾞ追加
 				csvOut()で面ﾃﾞｰﾀの最大最小値出力対応
 185		160205	TH_COLにより解析結果に着色
+186		160208	傾斜面補正ができるように座標修正
+				imgFlat()におけるdMin取得時に0は除外
 				
 
 

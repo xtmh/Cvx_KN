@@ -2,7 +2,7 @@
 //	param.h
 ////////////////////////
 
-#define		VER			185
+#define		VER			186
 
 #define		BMP_SAVE				//	これを定義すると面画像をbmpで保存する
 
@@ -53,12 +53,12 @@
 //	傾斜補正用の座標3点の初期値
 #define		KN
 #ifdef KN
-#define		X1			150	//	130
+#define		X1			180	//	130
 #define		X2			700
-#define		X3			500
-#define		Y1			500
-#define		Y2			700
-#define		Y3			130
+#define		X3			512
+#define		Y1			512
+#define		Y2			780
+#define		Y3			180
 #else
 #define		X1			150	//	130
 #define		X2			780

@@ -1629,8 +1629,10 @@ void CCveDlg::imgFlat()
 				dSum = (uSfc[x][y][RED]-ftSfc.dAvg);	//	•Î·
 				ftSfc.dRa += fabs(dSum);				//	—ÝÏ•Î·				
 				ftSfc.dDist += (dSum*dSum);				//	—ÝÏ•ªŽU’l
-				if(dSum>ftSfc.dMax)			ftSfc.dMax = dSum;
-				else if(dSum<ftSfc.dMin)	ftSfc.dMin = dSum;
+				if(dSum>ftSfc.dMax)
+					ftSfc.dMax = dSum;
+				else if((dSum<ftSfc.dMin)&&(uSfc[x][y][RED]!=0))
+					ftSfc.dMin = dSum;
 			}
 		}
 	}
