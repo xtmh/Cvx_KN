@@ -208,7 +208,8 @@ public:
 	void		imgNrAvg();		//	近傍平均算出処理			(③dAvg)
 	void		imgLwSub();		//	下限値からの差分値算出処理	(④MIN, ⑤dSub)
 	void		imgMeas();		//	計測評価処理				(⑥AVG, ⑦dSmp)
-	void		imgIncl();		//	傾斜面補正値算出
+	void		imgIncl();		//	傾斜面補正値算出(3点による面補正)
+	void		imgIncl2();		//	傾斜面補正値算出(4点による面補正)
 	void		imgSurface();	//	面画像生成
 	void		imgUpdate();	//	描画更新
 

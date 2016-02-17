@@ -1326,7 +1326,6 @@ void CCveDlg::ptAvg(double dst[], CPoint p)
 	dst = dP;
 }
 
-
 //	傾斜面補正値算出
 //	dInc <- dSmp
 void CCveDlg::imgIncl()
@@ -1341,9 +1340,9 @@ void CCveDlg::imgIncl()
 
 	//	傾斜補正座標初期化
 	if(bAnlyz){
-		ptD[0] = CPoint((crIn.ptCirc[100].x+crOut.ptCirc[100].x)/2, (crIn.ptCirc[100].y+crOut.ptCirc[100].y)/2);
-		ptD[1] = CPoint((crIn.ptCirc[400].x+crOut.ptCirc[400].x)/2, (crIn.ptCirc[400].y+crOut.ptCirc[400].y)/2);
-		ptD[2] = CPoint((crIn.ptCirc[700].x+crOut.ptCirc[700].x)/2, (crIn.ptCirc[700].y+crOut.ptCirc[700].y)/2);
+		ptD[0] = CPoint((crIn.ptCirc[P1].y+crOut.ptCirc[P1].y)/2, PY-(crIn.ptCirc[P1].x+crOut.ptCirc[P1].x)/2);
+		ptD[1] = CPoint((crIn.ptCirc[P2].y+crOut.ptCirc[P2].y)/2, PY-(crIn.ptCirc[P2].x+crOut.ptCirc[P2].x)/2);
+		ptD[2] = CPoint((crIn.ptCirc[P3].y+crOut.ptCirc[P3].y)/2, PY-(crIn.ptCirc[P3].x+crOut.ptCirc[P3].x)/2);
 	}else{
 		ptD[0] = CPoint(X1, Y1);
 		ptD[1] = CPoint(X2, Y2);
@@ -1401,6 +1400,103 @@ void CCveDlg::imgIncl()
 			dP[i] += dT[i][j] * dZ[j];
 		}
 	}
+	////////////////////////////////////////////////////////////
+	CString	s;
+	s.Format("a=%.3f, b=%.3f, c=%.3f", dP[0], dP[1], dP[2]);
+	//MessageBox(s);
+	////////////////////////////////////////////////////////////
+	
+	//	傾斜面補正値算出
+	for(y=0; y<PY; y++){
+		for(x=0; x<PX; x++){
+			pkDepth[y][x].dInc = (dP[0]*x + dP[1]*y + dP[2]);
+			//pkDepth[y][x].dSmp -= (dP[0]*x + dP[1]*y + dP[2]);
+		}
+	}
+}
+
+
+//	傾斜面補正値算出
+//	dInc <- dSmp
+void CCveDlg::imgIncl2()
+{
+	CWaitCursor	cur;
+	int		i, j, k, x, y;
+	int		n = 4;		//	行列の次数
+	double	dZ[4] = {0};//	dZ座標
+	double	dP[4] = {0};//	ﾊﾟﾗﾒｰﾀ{a, b, c}
+	double	dQ[3] = {0};
+	double	buf;
+
+	//	傾斜補正座標初期化
+	if(bAnlyz){
+		ptD[0] = CPoint((crIn.ptCirc[000].x+crOut.ptCirc[000].x)/2, (crIn.ptCirc[000].y+crOut.ptCirc[000].y)/2);
+		ptD[1] = CPoint((crIn.ptCirc[250].x+crOut.ptCirc[250].x)/2, (crIn.ptCirc[250].y+crOut.ptCirc[250].y)/2);
+		ptD[2] = CPoint((crIn.ptCirc[500].x+crOut.ptCirc[500].x)/2, (crIn.ptCirc[500].y+crOut.ptCirc[500].y)/2);
+		ptD[3] = CPoint((crIn.ptCirc[750].x+crOut.ptCirc[750].x)/2, (crIn.ptCirc[750].y+crOut.ptCirc[750].y)/2);
+	}else{
+		ptD[0] = CPoint(X1, Y1);
+		ptD[1] = CPoint(X2, Y2);
+		ptD[2] = CPoint(X3, Y3);
+	}
+
+	//	元ﾃﾞｰﾀの代入
+	double	dT[4][3] = {0};
+	double	dA[4][3] = {{ptD[0].x, ptD[0].y, 1},
+						{ptD[1].x, ptD[1].y, 1},
+						{ptD[2].x, ptD[2].y, 1},
+						{ptD[3].x, ptD[3].y, 1}};
+
+	for(i=0; i<n; i++){
+		dZ[i] = pkDepth[ptD[i].y][ptD[i].x].dSmp;
+	}
+	/**/
+	
+	for(n=0; n<4; n++){
+		ptAvg(dQ, ptD[n]);
+		//	XY
+		dA[n][0] = dQ[0];	//	X
+		dA[n][1] = dQ[1];	//	Y
+		dA[n][2] = 1;
+		dZ[n] = dQ[2];		//	Z
+	}
+	/**/
+	//単位行列を作る
+	for(i=0; i<n; i++){
+		for(j=0; j<n; j++){
+			dT[i][j] = (i==j) ? 1.0 : 0.0;
+		}
+	}
+	
+	//	逆行列演算(掃き出し法)
+	for(i=0; i<n; i++){
+		buf = 1.0 / dA[i][i];
+		for(j=0;j<n;j++){
+			dA[i][j] *= buf;
+			dT[i][j] *= buf;
+		}
+		for(j=0; j<n; j++){
+			if(i!=j){
+				buf = dA[j][i];
+				for(k=0; k<n; k++){
+					dA[j][k] -= dA[i][k] * buf;
+					dT[j][k] -= dT[i][k] * buf;
+				}
+			}
+		}
+	}
+
+	//	ﾊﾟﾗﾒｰﾀ逆算
+	for(i=0; i<n; i++){
+		for(j=0; j<n; j++){
+			dP[i] += dT[i][j] * dZ[j];
+		}
+	}
+	////////////////////////////////////////////////////////////
+	CString	s;
+	s.Format("a=%.3f, b=%.3f, c=%.3f", dP[0], dP[1], dP[2]);
+	MessageBox(s);
+	////////////////////////////////////////////////////////////
 	
 	//	傾斜面補正値算出
 	for(y=0; y<PY; y++){
@@ -1588,6 +1684,7 @@ void CCveDlg::OnBnClickedIncl()
 	UpdateData();
 	if(m_bIncl)
 		imgIncl();
+		//imgIncl2();
 	imgUpdate();
 }
 

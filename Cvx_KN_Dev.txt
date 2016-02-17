@@ -289,7 +289,9 @@ Version	Date	Development
 				Ì§²Ùµ°ÌßÝŽž‚É‰~Žü•ªÍˆ—‚ðŽÀŽ{‚·‚é‚æ‚¤‚ÉC³
 				Ì§²Ùµ°ÌßÝŽž‚ÉŒXŽÎ–Ê•â³ˆ—‚ðŽÀŽ{‚µ‚È‚¢‚æ‚¤‚ÉC³
 				ŒXŽÎ–Ê•â³‚ÌÁª¯¸ÎÞ¯¸½‚ÅimgIncl()‚ðŽÀŽ{
-
+188		160212	imgIncl2()‚Å4“_‚É‚æ‚é–Ê•â³ŒŸ“¢
+		160216	imgIncl()‚Å‚ÌÀ•WŽw’è‚ðXYŽ²ŒðŠ·
+				“¯‚¶‚­YŽ²”½“]
 
 
 
