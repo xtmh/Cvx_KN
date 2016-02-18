@@ -1337,16 +1337,35 @@ void CCveDlg::imgIncl()
 	double	dP[3] = {0};//	ﾊﾟﾗﾒｰﾀ{a, b, c}
 	double	dQ[3] = {0};
 	double	buf;
+	int		nS[3];		//	面補正に使用する座標No.(0-999)
 
-	//	傾斜補正座標初期化
-	if(bAnlyz){
-		ptD[0] = CPoint((crIn.ptCirc[P1].y+crOut.ptCirc[P1].y)/2, PY-(crIn.ptCirc[P1].x+crOut.ptCirc[P1].x)/2);
-		ptD[1] = CPoint((crIn.ptCirc[P2].y+crOut.ptCirc[P2].y)/2, PY-(crIn.ptCirc[P2].x+crOut.ptCirc[P2].x)/2);
-		ptD[2] = CPoint((crIn.ptCirc[P3].y+crOut.ptCirc[P3].y)/2, PY-(crIn.ptCirc[P3].x+crOut.ptCirc[P3].x)/2);
-	}else{
-		ptD[0] = CPoint(X1, Y1);
-		ptD[1] = CPoint(X2, Y2);
-		ptD[2] = CPoint(X3, Y3);
+	//	傾斜補正用座標の初期化
+	ptD[0] = CPoint(Y1, X1);
+	ptD[1] = CPoint(Y2, X2);
+	ptD[2] = CPoint(Y3, X3);
+
+	//	傾斜補正用座標No.初期化
+	nS[0] = P1;
+	nS[1] = P2;
+	nS[2] = P3;
+
+	//	傾斜補正座標動的初期化
+	for(i=0; i<n; i++){
+		if(bAnlyz){
+			//	分析済み
+			do{
+				//	傾斜補正用座標設定
+				ptD[i] = CPoint((crIn.ptCirc[nS[i]].y+crOut.ptCirc[nS[i]].y)/2, PY-(crIn.ptCirc[nS[i]].x+crOut.ptCirc[nS[i]].x)/2);
+				//	各座標No.のZ値を評価してNGなら座標No.を変更する
+				dZ[i] = pkDepth[ptD[i].y][ptD[i].x].dSmp;
+				if(fabs(dZ[i])>10.0)
+					nS[i] += 10;
+			}while(fabs(dZ[i])>10.0);
+		}else{
+			//	未分析
+			//	各座標No.のZ値を評価してNGなら座標No.を変更する
+			dZ[i] = pkDepth[ptD[i].y][ptD[i].x].dSmp;
+		}
 	}
 
 	//	元ﾃﾞｰﾀの代入
@@ -1355,9 +1374,6 @@ void CCveDlg::imgIncl()
 						{ptD[1].x, ptD[1].y, 1},
 						{ptD[2].x, ptD[2].y, 1}};
 
-	for(i=0; i<n; i++){
-		dZ[i] = pkDepth[ptD[i].y][ptD[i].x].dSmp;
-	}
 	/**/
 	
 	for(n=0; n<3; n++){

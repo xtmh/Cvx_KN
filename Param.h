@@ -74,6 +74,6 @@
 #define		TH_OTL		50//100		//	輪郭点検出閾値
 
 //	面補正用抽出座標点のNo.
-#define		P1			100
+#define		P1			0
 #define		P2			(P1+300)	//300
 #define		P3			(P2+300)	//600
