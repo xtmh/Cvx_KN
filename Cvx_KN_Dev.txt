@@ -292,6 +292,8 @@ Version	Date	Development
 188		160212	imgIncl2()で4点による面補正検討
 		160216	imgIncl()での座標指定をXY軸交換
 				同じくY軸反転
+189		160218	KHへ送付
+190		160219	
 
 
 
