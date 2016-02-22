@@ -87,6 +87,7 @@ CCveDlg::CCveDlg(CWnd* pParent /*=NULL*/)
 	, m_bCurv(TRUE)
 	, m_strDet(_T(""))
 	, m_bIncl(FALSE)			//	åXéŒñ ï‚ê≥
+	, m_bInv(FALSE)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON2);
 
@@ -173,6 +174,7 @@ void CCveDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_DET, m_strDet);
 	DDX_Control(pDX, IDC_RANGE, m_xcRange);
 	DDX_Check(pDX, IDC_INCL, m_bIncl);
+	DDX_Check(pDX, IDC_INV, m_bInv);
 }
 
 BEGIN_MESSAGE_MAP(CCveDlg, CDialogEx)
@@ -204,6 +206,7 @@ BEGIN_MESSAGE_MAP(CCveDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_INCL, &CCveDlg::OnBnClickedIncl)
 	ON_BN_CLICKED(IDC_ANLYZ, &CCveDlg::OnBnClickedAnlyz)
 	ON_BN_CLICKED(IDC_IMG_OPEN, &CCveDlg::OnBnClickedImgOpen)
+	ON_BN_CLICKED(IDC_INV, &CCveDlg::OnBnClickedInv)
 END_MESSAGE_MAP()
 
 
@@ -598,7 +601,7 @@ void CCveDlg::fileOpen()
 		}else{
 			//	ï]âøópÇÃèàóù
 			imgMeas();			//	ééóøåvë™				dSmp <- dCal, dSub	<< dCal <- dCrv, dAvg
-			//imgIncl();			//	åXéŒñ ï‚ê≥íl(dInc)éZèo	dInc <- dSmp
+			//imgIncl();		//	åXéŒñ ï‚ê≥íl(dInc)éZèo	dInc <- dSmp	Å¶.ñ âÊëúê∂ê¨å„Ç…à⁄ìÆ
 		}
 		imgSurface();		//	ñ âÊëúê∂ê¨					nOrg <- dSmp, dInc
 
@@ -677,7 +680,8 @@ void CCveDlg::imgOpen(CString s, bool bRaw)
 	for(y=0; y<PY; y++){
 		for(x=0; x<PX; x++){
 			for(z=0; z<PZ; z++){
-				uFrm[y][z][x] = ((uchar(*)[PX][PZ])((void*)uFro))[y][x][z];		//	XYâÒì](òpã»Çå©Ç¶ÇÈÇÊÇ§Ç…Ç∑ÇÈÇΩÇﬂ)
+				//uFrm[y][z][x] = ((uchar(*)[PX][PZ])((void*)uFro))[y][x][z];		//	XYâÒì](òpã»Çå©Ç¶ÇÈÇÊÇ§Ç…Ç∑ÇÈÇΩÇﬂ)
+				uFrm[y][z][x] = ((uchar(*)[PX][PZ])((void*)uFro))[y][x][PZ-z-1];	//	XYâÒì](òpã»Çå©Ç¶ÇÈÇÊÇ§Ç…Ç∑ÇÈÇΩÇﬂ)
 			}
 		}
 	}
@@ -703,10 +707,10 @@ void CCveDlg::imgCalc()
 	int			x, y, z, c;
 	int			tz[PY];
 
-	for(x=0; x<PX; x++){
-		for(z=0; z<PZ; z++){
+	for(x=0; x<PX; x++){			//	1024
+		for(z=0; z<PZ; z++){		//	512
 #pragma omp parallel for
-			for(y=0; y<PY; y++){
+			for(y=0; y<PY; y++){	//	1024
 				//	Ç±Ç±Ç≈Zé≤ï‚ê≥âÊëúÇçÏê¨ÇµÇΩÇ¢
 				tz[y] =  z - (int)pkDepth[y][x].dSub;	// + 512;	
 				if(tz[y]<0)		tz[y] = 0;
@@ -1097,6 +1101,13 @@ void CCveDlg::imgSurface()
 			pkDepth[y][x].nOrg = nDt;
 		}
 	}
+}
+
+//	ïÑçÜîΩì]¡™Ø∏ŒﬁØ∏Ω
+void CCveDlg::OnBnClickedInv()
+{
+	UpdateData();
+	Invalidate();
 }
 
 //	òpã»ï‚ê≥¡™Ø∏ŒﬁØ∏Ω
@@ -1885,3 +1896,5 @@ void CCveDlg::OnBnClickedImgOpen()
 		OnBnClickedAnlyz();
 	}
 }
+
+

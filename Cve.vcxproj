@@ -219,9 +219,6 @@
   <ItemGroup>
     <ResourceCompile Include="Cve.rc" />
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="Cvx_KN_Dev.txt" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

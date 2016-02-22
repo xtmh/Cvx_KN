@@ -288,4 +288,6 @@ public:
 	afx_msg void OnBnClickedIncl();
 	afx_msg void OnBnClickedAnlyz();
 	afx_msg void OnBnClickedImgOpen();
+	afx_msg void OnBnClickedInv();
+	BOOL m_bInv;
 };

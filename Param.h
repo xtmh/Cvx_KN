@@ -2,9 +2,9 @@
 //	param.h
 ////////////////////////
 
-#define		VER			190
+#define		VER			191
 
-#define		BMP_SAVE				//	‚±‚ê‚ð’è‹`‚·‚é‚Æ–Ê‰æ‘œ‚ðbmp‚Å•Û‘¶‚·‚é
+//#define		BMP_SAVE				//	‚±‚ê‚ð’è‹`‚·‚é‚Æ–Ê‰æ‘œ‚ðbmp‚Å•Û‘¶‚·‚é
 
 #define		Z_RVS					//	ZŽ²”½“]
 

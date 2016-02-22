@@ -77,7 +77,4 @@
       <Filter>リソース ファイル</Filter>
     </ResourceCompile>
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="Cvx_KN_Dev.txt" />
-  </ItemGroup>
 </Project>
