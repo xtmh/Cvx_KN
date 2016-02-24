@@ -680,8 +680,8 @@ void CCveDlg::imgOpen(CString s, bool bRaw)
 	for(y=0; y<PY; y++){
 		for(x=0; x<PX; x++){
 			for(z=0; z<PZ; z++){
-				//uFrm[y][z][x] = ((uchar(*)[PX][PZ])((void*)uFro))[y][x][z];		//	XY‰ñ“](˜p‹È‚ðŒ©‚¦‚é‚æ‚¤‚É‚·‚é‚½‚ß)
-				uFrm[y][z][x] = ((uchar(*)[PX][PZ])((void*)uFro))[y][x][PZ-z-1];	//	XY‰ñ“](˜p‹È‚ðŒ©‚¦‚é‚æ‚¤‚É‚·‚é‚½‚ß)
+				uFrm[y][z][x] = ((uchar(*)[PX][PZ])((void*)uFro))[y][x][z];		//	XY‰ñ“](˜p‹È‚ðŒ©‚¦‚é‚æ‚¤‚É‚·‚é‚½‚ß)
+				//uFrm[y][z][x] = ((uchar(*)[PX][PZ])((void*)uFro))[y][x][PZ-z-1];	//	XY‰ñ“](˜p‹È‚ðŒ©‚¦‚é‚æ‚¤‚É‚·‚é‚½‚ß)
 			}
 		}
 	}
@@ -998,7 +998,7 @@ void CCveDlg::imgLwSub()
 	}
 	///////////////////////////////////////////////////////////////////////////////
 	//	¶°ÌÞÌ¨¯Ã¨Ý¸Þ‚µ‚½À•Wo—Í(x=PX/2‚Ì×²Ý)
-	
+	/*
 	CFile	f;
 	//CString	s;
 	f.Open("c:\\temp\\cvx\\peak.csv", CFile::modeCreate|CFile::modeWrite);
@@ -1007,10 +1007,10 @@ void CCveDlg::imgLwSub()
 	for(y=0; y<PY; y++){
 		s.Format("%d,%.3f,%.3f,%.3f", y, pkDepth[y][PX/2].dCrv, pkDepth[y][PX/2].dAvg, pkDepth[y][PX/2].dCal);
 		//s.Format("%d,%.3f,%.3f", y, pkDepth[y][PX/2].dSub, pkDepth[y][PX/2].dCal);
-		/*
-		for(int m=0; m<FIT_NUM; m++){
-			s.Format("%s,%d", s, pkDepth[y][PX/2].nFit[m]);	//	Žü•ÓÀ•WÃÞ°À
-		}*/
+		
+		//for(int m=0; m<FIT_NUM; m++){
+		//	s.Format("%s,%d", s, pkDepth[y][PX/2].nFit[m]);	//	Žü•ÓÀ•WÃÞ°À
+		//}
 		s.Format("%s\n", s);
 		f.Write(s, s.GetLength());
 	}
