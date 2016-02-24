@@ -890,7 +890,7 @@ void CCveDlg::imgCvFit()
 #pragma omp parallel for
 		for(x=0; x<PX; x++){
 			nMax[x] = 0;
-			pkDepth[y][x].nOrg = 100;		//	100で開始する(特別な値として)
+			pkDepth[y][x].nOrg = 510;		//	100で開始する(特別な値として)
 			for(z=0; z<PZ; z++){
 				//uDt[x] = uFro[x][z][y];	//	uFro:補正画像->補正画像
 				uDt[x] = uFrm[x][z][y];		//	uFrm:無補正画像->補正画像
@@ -909,7 +909,7 @@ void CCveDlg::imgCvFit()
 		for(x=0; x<PX; x++){
 			nPeak[y] = pkDepth[y][x].nOrg;
 			//	ﾋﾟｰｸが検出されなかった場合はｶｰﾌﾞﾌｨｯﾃｷﾝｸﾞはｽﾙｰ
-			if(nPeak[y] == 100){
+			if(nPeak[y] == 510){
 				pkDepth[y][x].dCrv = 0.0;
 				continue;
 			}
@@ -1039,8 +1039,6 @@ void CCveDlg::imgMeas()
 				//	ｶｰﾌﾞﾌｨｯﾃｨﾝｸﾞで値が取れた場合に補正値算出
 				if(m_bCurv)		pkDepth[y][x].dCal = pkDepth[y][x].dCrv - pkDepth[y][x].dSub;	//	湾曲補正あり
 				else			pkDepth[y][x].dCal = pkDepth[y][x].dCrv;						//	湾曲補正なし
-				//if((dAvg/num)>200)
-				//	num = num;
 				dAvg += pkDepth[y][x].dCal;
 				num++;
 			}else{
