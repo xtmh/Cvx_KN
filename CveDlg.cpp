@@ -681,7 +681,7 @@ void CCveDlg::imgOpen(CString s, bool bRaw)
 		for(x=0; x<PX; x++){
 			for(z=0; z<PZ; z++){
 				uFrm[y][z][x] = ((uchar(*)[PX][PZ])((void*)uFro))[y][x][z];		//	XY回転(湾曲を見えるようにするため)
-				//uFrm[y][z][x] = ((uchar(*)[PX][PZ])((void*)uFro))[y][x][PZ-z-1];	//	XY回転(湾曲を見えるようにするため)
+				//uFrm[y][PZ-z-1][x] = ((uchar(*)[PX][PZ])((void*)uFro))[y][x][z];	//	XY回転(湾曲を見えるようにするため)
 			}
 		}
 	}
@@ -895,11 +895,12 @@ void CCveDlg::imgCvFit()
 #pragma omp parallel for
 		for(x=0; x<PX; x++){
 			nMax[x] = 0;
-			pkDepth[y][x].nOrg = 100;	//	100で開始する
+			pkDepth[y][x].nOrg = 100;		//	100で開始する(特別な値として)
 			for(z=0; z<PZ; z++){
-				//uDt[x] = uFro[x][z][y];	//	uFro:無補正画像->補正画像
-				uDt[x] = uFrm[x][z][y];	//	uFrm:無補正画像->補正画像
-				if((nMax[x]<uDt[x])&&(50<uDt[x])&&(uDt[x]!=255)){	//	
+				//uDt[x] = uFro[x][z][y];	//	uFro:補正画像->補正画像
+				uDt[x] = uFrm[x][z][y];		//	uFrm:無補正画像->補正画像
+				if((nMax[x]<uDt[x])&&(50<uDt[x])&&(uDt[x]!=255)){
+					//	最大で50より大きく255でない
 					nMax[x] = uDt[x];				//	ﾋﾟｰｸ値保持
 					pkDepth[y][x].nOrg = z;	//	ﾋﾟｰｸ座標保持
 				}//	end if
@@ -912,6 +913,12 @@ void CCveDlg::imgCvFit()
 	for(y=0; y<PY; y++){
 		for(x=0; x<PX; x++){
 			nPeak[y] = pkDepth[y][x].nOrg;
+			//	ﾋﾟｰｸが検出されなかった場合はｶｰﾌﾞﾌｨｯﾃｷﾝｸﾞはｽﾙｰ
+			if(nPeak[y] == 100){
+				pkDepth[y][x].dCrv = 0.0;
+				continue;
+			}
+			//
 			if(	(nPeak[y]>FIT_NUM/2)&&			//	開始点条件
 				(nPeak[y]<(PZ-FIT_NUM/2-1))){	//	停止点条件
 					zs = nPeak[y] - FIT_NUM/2;	//	近傍座標開始点
@@ -924,12 +931,12 @@ void CCveDlg::imgCvFit()
 						n++;
 					}
 					pkDepth[y][x].dCrv = imgFitting(dDst[y], nFit[y], nPeak[y]);
-					
+					/*	
 					pkDepth[y][x].a = dDst[y][0];
 					pkDepth[y][x].b = dDst[y][1];
 					pkDepth[y][x].c = dDst[y][2];
 					memcpy(pkDepth[y][x].nFit, nFit[y], sizeof(int)*FIT_NUM);
-					
+					*/
 			}else{
 				//	ﾋﾟｰｸなし
 				pkDepth[y][x].dCrv = 0.0;
@@ -1034,11 +1041,15 @@ void CCveDlg::imgMeas()
 	for(y=0; y<PY; y++){
 		for(x=0; x<PX; x++){
 			if(pkDepth[y][x].dCrv != 0){
+				//	ｶｰﾌﾞﾌｨｯﾃｨﾝｸﾞで値が取れた場合に補正値算出
 				if(m_bCurv)		pkDepth[y][x].dCal = pkDepth[y][x].dCrv - pkDepth[y][x].dSub;	//	湾曲補正あり
 				else			pkDepth[y][x].dCal = pkDepth[y][x].dCrv;						//	湾曲補正なし
+				//if((dAvg/num)>200)
+				//	num = num;
 				dAvg += pkDepth[y][x].dCal;
 				num++;
 			}else{
+				//	ｶｰﾌﾞﾌｨｯﾃｨﾝｸﾞで値が取れていない場合は排除
 				pkDepth[y][x].dCal = 1000.0;		//	排除すべき特別な値
 			}//	end if
 		}//	end for x
@@ -1047,7 +1058,13 @@ void CCveDlg::imgMeas()
 	//	平均0の差分ﾏｯﾌﾟ(⑧dSmp)
 	for(y=0; y<PY; y++){
 		for(x=0; x<PX; x++){
-			pkDepth[y][x].dSmp = pkDepth[y][x].dCal - dAvg;
+			if(pkDepth[y][x].dCrv != 0){
+				//	ｶｰﾌﾞﾌｨｯﾃｨﾝｸﾞで値が取れた場合に差分値算出
+				pkDepth[y][x].dSmp = pkDepth[y][x].dCal - dAvg;
+			}else{
+				//	ｶｰﾌﾞﾌｨｯﾃｨﾝｸﾞで値が取れていない場合は排除
+				pkDepth[y][x].dSmp = 1000.0;
+			}
 		}//	end for x
 	}//	end for y
 	Invalidate(FALSE);
@@ -1189,7 +1206,7 @@ void CCveDlg::imgSlc()
 #ifdef	Z_RVS
 			//	Peak表面表示
 			if(m_bPeak){
-				//	表面画像は色調反転
+				//	表粗さ画像は色調反転
 				if(m_bCal)	memcpy(&uSfc[x][y][0], &uClr[255-(uchar)pkDepth[y][x].nOrg][0], 3);	//	疑似ｶﾗｰ
 				else		memset(&uSfc[x][y][0], (255-(uchar)pkDepth[y][x].nOrg), 3);			//	ﾓﾉｸﾛ
 			}else if(m_bCurv){
