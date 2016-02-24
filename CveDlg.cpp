@@ -680,8 +680,11 @@ void CCveDlg::imgOpen(CString s, bool bRaw)
 	for(y=0; y<PY; y++){
 		for(x=0; x<PX; x++){
 			for(z=0; z<PZ; z++){
+#ifdef ZRV
+				uFrm[y][PZ-z-1][x] = ((uchar(*)[PX][PZ])((void*)uFro))[y][x][z];	//	XY回転(湾曲を見えるようにするため)
+#else
 				uFrm[y][z][x] = ((uchar(*)[PX][PZ])((void*)uFro))[y][x][z];		//	XY回転(湾曲を見えるようにするため)
-				//uFrm[y][PZ-z-1][x] = ((uchar(*)[PX][PZ])((void*)uFro))[y][x][z];	//	XY回転(湾曲を見えるようにするため)
+#endif // ZRV
 			}
 		}
 	}
@@ -918,7 +921,7 @@ void CCveDlg::imgCvFit()
 				pkDepth[y][x].dCrv = 0.0;
 				continue;
 			}
-			//
+			/**/
 			if(	(nPeak[y]>FIT_NUM/2)&&			//	開始点条件
 				(nPeak[y]<(PZ-FIT_NUM/2-1))){	//	停止点条件
 					zs = nPeak[y] - FIT_NUM/2;	//	近傍座標開始点

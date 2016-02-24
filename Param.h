@@ -2,9 +2,11 @@
 //	param.h
 ////////////////////////
 
-#define		VER			193
+#define		VER			194
 
 //#define		BMP_SAVE				//	‚±‚ê‚ð’è‹`‚·‚é‚Æ–Ê‰æ‘œ‚ðbmp‚Å•Û‘¶‚·‚é
+
+#define		ZRV						//	imgOpen()‚Å‚ÌZŽ²”½“]
 
 #define		Z_RVS					//	ZŽ²”½“]
 
