@@ -449,11 +449,7 @@ void CCveDlg::OnPaint()
 		StretchDIBits(	dc.m_hDC,
 						10, IMG_OFS,
 						PY/EXPND, PZ/EXPND,		//	o—ÍÀ•W
-#ifdef	Z_RVS
 						0, PZ, PY, -PZ,			//	Œ³‰æ‘œ‚ÌÀ•W
-#else
-						0, 0, PY, PZ,			//	Œ³‰æ‘œ‚ÌÀ•W
-#endif
 						uDsp, &bi,				//	‰æ‘œƒf[ƒ^
 						DIB_RGB_COLORS,	SRCCOPY);
 		//	‡A¶×°ÊŞ°(¶)
@@ -490,11 +486,7 @@ void CCveDlg::OnPaint()
 			dc.MoveTo(10, PZ/EXPND+IMG_OFS);
 			for(x=10; x<10+PY/EXPND; x++){
 				nx = (x-10)*EXPND;
-#ifdef	Z_RVS
 				y = IMG_OFS+pkDepth[nx][PY-m_nSld-1].nOrg;	//	XY²ŒğŠ·,Y²”½“]
-#else
-				y = IMG_OFS+PZ/EXPND-pkDepth[nx][PY-m_nSld-1].nOrg;	//	XY²ŒğŠ·,Y²”½“]
-#endif
 				if(bZero||(y>280))	dc.MoveTo(x, y);
 				else				dc.LineTo(x, y);
 				if(y>280)	bZero = true;
@@ -680,11 +672,11 @@ void CCveDlg::imgOpen(CString s, bool bRaw)
 	for(y=0; y<PY; y++){
 		for(x=0; x<PX; x++){
 			for(z=0; z<PZ; z++){
-#ifdef ZRV
+#ifdef Z_RVS
 				uFrm[y][PZ-z-1][x] = ((uchar(*)[PX][PZ])((void*)uFro))[y][x][z];	//	XY‰ñ“](˜p‹È‚ğŒ©‚¦‚é‚æ‚¤‚É‚·‚é‚½‚ß)
 #else
 				uFrm[y][z][x] = ((uchar(*)[PX][PZ])((void*)uFro))[y][x][z];		//	XY‰ñ“](˜p‹È‚ğŒ©‚¦‚é‚æ‚¤‚É‚·‚é‚½‚ß)
-#endif // ZRV
+#endif // Z_RVS
 			}
 		}
 	}
@@ -1112,12 +1104,8 @@ void CCveDlg::imgSurface()
 				nDt = (int)(128.0*UM_RATIO*pkDepth[y][x].dSmp/dRange+128.0);	//	um‚É•ÏŠ·‚µ‚Ä[}dRange]‚Å8bit‚É³‹K‰»
 			}
 			//nDt = 128;//(int)(128.0*(x/10)/dRange+128.0);
-#ifdef	Z_RVS
 			if(nDt>255)	nDt = 255;	//	255;
-#else
-			if(nDt>255)	nDt = 0;	//	255;
-#endif
-			if(nDt<0)	nDt = 255;	//	”wŒi‚Ì”’“_œ‹
+			if(nDt<=0)	nDt = 255;	//	”wŒi‚Ì”’“_œ‹
 			pkDepth[y][x].nOrg = nDt;
 		}
 	}
@@ -1206,7 +1194,6 @@ void CCveDlg::imgSlc()
 #pragma omp parallel for
 	for(x=0; x<PX; x++){
 		for(y=0; y<PY ;y++){
-#ifdef	Z_RVS
 			//	Peak•\–Ê•\¦
 			if(m_bPeak){
 				//	•\‘e‚³‰æ‘œ‚ÍF’²”½“]
@@ -1221,21 +1208,6 @@ void CCveDlg::imgSlc()
 				if(m_bCal)	memcpy(&uSfc[x][y][0], &uClr[uFrm[x][m_nSldCore][y]][0], 3);		//	‹^—¶×°
 				else		memset(&uSfc[x][y][0], uFrm[x][m_nSldCore][y], 3);					//	ÓÉ¸Û
 			}
-#else
-			//	Peak•\–Ê•\¦
-			if(m_bPeak){
-				if(m_bCal)	memcpy(&uSfc[x][y][0], &uClr[(uchar)pkDepth[y][x].nOrg][0], 3);		//	‹^—¶×°
-				else		memset(&uSfc[x][y][0], (uchar)(pkDepth[y][x].nOrg), 3);				//	ÓÉ¸Û
-			}else if(m_bCurv){
-				//	˜p‹È•â³Œã½×²½‰æ‘œ
-				if(m_bCal)	memcpy(&uSfc[x][y][0], &uClr[uFro[x][PZ-m_nSldCore-1][y]][0], 3);	//	‹^—¶×°
-				else		memset(&uSfc[x][y][0], uFro[x][PZ-m_nSldCore-1][y], 3);				//	ÓÉ¸Û
-			}else{
-				//	˜p‹È•â³‘O½×²½‰æ‘œ
-				if(m_bCal)	memcpy(&uSfc[x][y][0], &uClr[uFrm[x][PZ-m_nSldCore-1][y]][0], 3);	//	‹^—¶×°
-				else		memset(&uSfc[x][y][c], uFrm[x][PZ-m_nSldCore-1][y], 3);				//	ÓÉ¸Û
-			}
-#endif
 		}
 	}
 	Invalidate(FALSE);

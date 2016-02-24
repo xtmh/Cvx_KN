@@ -107,19 +107,11 @@ void CCirc::OnPaint()
 	dc.MoveTo(0, nPos);
 	dc.LineTo(0+PX/EXPND, nPos);
 	//	
-#ifdef	Z_RVS
 	d->m_strXY.Format("Click:(%d, %d)\nMove:(%d, %d)\n ¨ HF%+.2f[um]", 
 						d->ptPos.x, d->ptPos.y,
 						d->ptMov.x, d->ptMov.y,
 						//(-1*UM_RATIO*d->pkDepth[d->ptMov.y][d->ptMov.x].dSmp/(double)d->nViewRange));
 						-(UM_RATIO*d->pkDepth[d->ptMov.x][d->ptMov.y].dSmp));
-#else
-	d->m_strXY.Format("Click:(%d, %d)\nMove:(%d, %d)\n ¨ HF%+.2f[um]", 
-						d->ptPos.x, d->ptPos.y,
-						d->ptMov.x, d->ptMov.y,
-						//(-1*UM_RATIO*d->pkDepth[d->ptMov.y][d->ptMov.x].dSmp/(double)d->nViewRange));
-						(UM_RATIO*d->pkDepth[d->ptMov.x][d->ptMov.y].dSmp));
-#endif
 	dc.SelectObject(pOldPen);
 	CString	s;
 	//	Ëß°¸ŒŸoŠ®—¹
