@@ -870,8 +870,6 @@ void CCveDlg::imgPol(uchar dst[][PD][PC], uchar src[][PX][PC])
 */
 }
 
-
-
 //	ﾋﾟｰｸ検出処理
 //void CCveDlg::imgPeak(uchar dst[][PX][PC], uchar src[][PX][PC])
 void CCveDlg::imgCvFit()
@@ -947,7 +945,12 @@ void CCveDlg::imgNrAvg()
 	int		x, y, c;
 	int		tx, ty;
 	double	dSum;
+	double	diff;
+	double	data;
+	double	dAvg, dVar, dSd;
+	int		cnt;
 
+#if 0
 	//	近傍平均値算出(③dAvg)
 	for(y=0; y<PY; y++){
 		for(x=0; x<PX; x++){
@@ -966,6 +969,69 @@ void CCveDlg::imgNrAvg()
 			}
 		}
 	}
+#endif
+
+#if 1
+	//	標準偏差算出
+	dSum = 0.0;
+	for(y=0; y<PY; y++){
+		for(x=0; x<PX; x++){
+			dSum += pkDepth[y][x].dCrv;
+		}
+	}
+	dAvg = dSum/(PY*PX);		//	全体の平均値
+	dVar = 0;	
+	for(y=0; y<PY; y++){
+		for(x=0; x<PX; x++){
+			diff = pkDepth[y][x].dCrv - dAvg;
+			dVar += diff*diff;
+		}
+	}
+	dSd = 100;					//	値が厳しくて補正できない領域が生じる対策
+	//dSd = sqrt(dVar/(PY*PX));	//	標準偏差(間違いだが実用上この値を使用, dSd≒3)
+	//dSd = sqrt(dVar)/(PY*PX);	//	標準偏差
+
+	//	近傍平均値算出(③dAvg)
+	for(y=0; y<PY; y++){
+		for(x=0; x<PX; x++){
+			//	輪郭ﾃﾞｰﾀを区分
+			if((x<=AVG_FRM)||(x>(PX-AVG_FRM-1))||(y<=AVG_FRM)||(y>(PY-AVG_FRM-1))){
+				//	ﾌﾚｰﾑｴﾘｱは実値
+				pkDepth[y][x].dAvg = pkDepth[y][x].dCrv;
+			}else{
+				//	近傍平均値
+				dSum = 0.0;
+				cnt = 0;
+				//	矩形ｴﾘｱで平均化
+				for(ty=y-AVG_FRM; ty<=y+AVG_FRM; ty++){
+					for(tx=x-AVG_FRM; tx<=x+AVG_FRM; tx++){
+						//dSum += pkDepth[y][x].dCrv;
+						//	異常値はﾊﾟｽ
+						data = pkDepth[ty][tx].dCrv;
+						if(data < dAvg-(2*dSd))	// 2015.05.28変更
+						{
+							continue;
+						}
+						if(dAvg+(2*dSd) < data)	// 2015.05.28変更
+						{
+							continue;
+						}
+						//	正常値積算
+						dSum += data;
+						++cnt;
+					}
+				}
+				//	正常値で平均値算出
+				if(cnt){
+					pkDepth[y][x].dAvg = dSum/cnt;	//	矩形ｴﾘｱの平均値
+				}else{	
+					pkDepth[y][x].dAvg = dAvg;		//	全て異常値の場合は全体の平均値を代入
+				}
+				//pkDepth[y][x].dAvg = dSum/(AVG_FRM*2+1)/(AVG_FRM*2+1);	//	近傍平均値
+			}
+		}
+	}
+#endif
 }
 
 //	下限値からの差分値
