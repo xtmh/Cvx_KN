@@ -95,8 +95,8 @@ void CCirc::OnPaint()
 		//	ŒXŽÎ–Ê•â³—˜—p“_•`‰æ
 		if(d->m_bIncl){
 			for(int p=0; p<3; p++){
-				dc.Rectangle(	(d->ptD[p].x-5)/EXPND, (d->ptD[p].y-5)/EXPND, 
-								(d->ptD[p].x+5)/EXPND, (d->ptD[p].y+5)/EXPND);
+				dc.Rectangle(	(d->ptD[p].y-5)/EXPND, (d->ptD[p].x-5)/EXPND, 
+								(d->ptD[p].y+5)/EXPND, (d->ptD[p].x+5)/EXPND);
 			}
 		}
 	}

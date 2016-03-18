@@ -486,7 +486,7 @@ void CCveDlg::OnPaint()
 			dc.MoveTo(10, PZ/EXPND+IMG_OFS);
 			for(x=10; x<10+PY/EXPND; x++){
 				nx = (x-10)*EXPND;
-				y = IMG_OFS+pkDepth[nx][PY-m_nSld-1].nOrg;	//	XYŽ²ŒðŠ·,YŽ²”½“]
+				y = IMG_OFS+pkDepth[nx][m_nSld].nOrg;	//	XYŽ²ŒðŠ·,YŽ²”½“]
 				if(bZero||(y>280))	dc.MoveTo(x, y);
 				else				dc.LineTo(x, y);
 				if(y>280)	bZero = true;
@@ -672,7 +672,7 @@ void CCveDlg::imgOpen(CString s, bool bRaw)
 	for(y=0; y<PY; y++){
 		for(x=0; x<PX; x++){
 			for(z=0; z<PZ; z++){
-#ifdef Z_RVS
+#ifdef Z_RVS	//	ZŽ²”½“]ˆ—(‚±‚±‚¾‚¯)
 				uFrm[y][PZ-z-1][x] = ((uchar(*)[PX][PZ])((void*)uFro))[y][x][z];	//	XY‰ñ“](˜p‹È‚ðŒ©‚¦‚é‚æ‚¤‚É‚·‚é‚½‚ß)
 #else
 				uFrm[y][z][x] = ((uchar(*)[PX][PZ])((void*)uFro))[y][x][z];		//	XY‰ñ“](˜p‹È‚ðŒ©‚¦‚é‚æ‚¤‚É‚·‚é‚½‚ß)
@@ -969,9 +969,7 @@ void CCveDlg::imgNrAvg()
 			}
 		}
 	}
-#endif
-
-#if 1
+#else
 	//	•W€•Î·ŽZo
 	dSum = 0.0;
 	for(y=0; y<PY; y++){
@@ -1005,6 +1003,8 @@ void CCveDlg::imgNrAvg()
 				//	‹éŒ`´Ø±‚Å•½‹Ï‰»
 				for(ty=y-AVG_FRM; ty<=y+AVG_FRM; ty++){
 					for(tx=x-AVG_FRM; tx<=x+AVG_FRM; tx++){
+
+
 						//dSum += pkDepth[y][x].dCrv;
 						//	ˆÙí’l‚ÍÊß½
 						data = pkDepth[ty][tx].dCrv;
@@ -1236,12 +1236,12 @@ void CCveDlg::imgChg()
 		for(z=0; z<PZ; z++){
 			if(m_bCal){
 				//	‹^Ž—¶×°•\Ž¦
-				if(m_bCurv)	memcpy(&uDsp[z][y][0], &uClr[uFro[PF-m_nSld-1][z][y]][0], 3);	//	˜p‹È•â³‰æ‘œ
-				else		memcpy(&uDsp[z][y][0], &uClr[uFrm[PF-m_nSld-1][z][y]][0], 3);	//	–³•â³‰æ‘œ
+				if(m_bCurv)	memcpy(&uDsp[z][y][0], &uClr[uFro[m_nSld][z][y]][0], 3);	//	˜p‹È•â³‰æ‘œ
+				else		memcpy(&uDsp[z][y][0], &uClr[uFrm[m_nSld][z][y]][0], 3);	//	–³•â³‰æ‘œ
 			}else{
 				//	¸ÞÚ°½¹°Ù•\Ž¦
-				if(m_bCurv)	memset(&uDsp[z][y][0], uFro[PF-m_nSld-1][z][y], 3);	//	˜p‹È•â³‰æ‘œ
-				else		memset(&uDsp[z][y][0], uFrm[PF-m_nSld-1][z][y], 3);	//	–³•â³‰æ‘œ
+				if(m_bCurv)	memset(&uDsp[z][y][0], uFro[m_nSld][z][y], 3);	//	˜p‹È•â³‰æ‘œ
+				else		memset(&uDsp[z][y][0], uFrm[m_nSld][z][y], 3);	//	–³•â³‰æ‘œ
 			}
 		}
 	}
@@ -1261,16 +1261,22 @@ void CCveDlg::imgSlc()
 			//	Peak•\–Ê•\Ž¦
 			if(m_bPeak){
 				//	•\‘e‚³‰æ‘œ‚ÍF’²”½“]
-				if(m_bCal)	memcpy(&uSfc[x][y][0], &uClr[255-(uchar)pkDepth[y][x].nOrg][0], 3);	//	‹^Ž—¶×°
-				else		memset(&uSfc[x][y][0], (255-(uchar)pkDepth[y][x].nOrg), 3);			//	ÓÉ¸Û
+				//if(m_bCal)	memcpy(&uSfc[x][y][0], &uClr[255-(uchar)pkDepth[y][x].nOrg][0], 3);	//	‹^Ž—¶×°
+				//else		memset(&uSfc[x][y][0], (255-(uchar)pkDepth[y][x].nOrg), 3);			//	ÓÉ¸Û
+				if(m_bCal)	memcpy(&uSfc[x][y][0], &uClr[255-(uchar)pkDepth[y][(PX-1)-x].nOrg][0], 3);	//	‹^Ž—¶×°
+				else		memset(&uSfc[x][y][0], (255-(uchar)pkDepth[y][(PX-1)-x].nOrg), 3);			//	ÓÉ¸Û
 			}else if(m_bCurv){
 				//	˜p‹È•â³Œã½×²½‰æ‘œ
-				if(m_bCal)	memcpy(&uSfc[x][y][0], &uClr[uFro[x][m_nSldCore][y]][0], 3);		//	‹^Ž—¶×°
-				else		memset(&uSfc[x][y][0], uFro[x][m_nSldCore][y], 3);					//	ÓÉ¸Û
+				//if(m_bCal)	memcpy(&uSfc[x][y][0], &uClr[uFro[x][m_nSldCore][y]][0], 3);		//	‹^Ž—¶×°
+				//else		memset(&uSfc[x][y][0], uFro[x][m_nSldCore][y], 3);					//	ÓÉ¸Û
+				if(m_bCal)	memcpy(&uSfc[x][y][0], &uClr[uFro[(PX-1)-x][(PZ-1)-m_nSldCore][y]][0], 3);	//	‹^Ž—¶×°
+				else		memset(&uSfc[x][y][0], uFro[(PX-1)-x][(PZ-1)-m_nSldCore][y], 3);			//	ÓÉ¸Û
 			}else{
 				//	˜p‹È•â³‘O½×²½‰æ‘œ
-				if(m_bCal)	memcpy(&uSfc[x][y][0], &uClr[uFrm[x][m_nSldCore][y]][0], 3);		//	‹^Ž—¶×°
-				else		memset(&uSfc[x][y][0], uFrm[x][m_nSldCore][y], 3);					//	ÓÉ¸Û
+				//if(m_bCal)	memcpy(&uSfc[x][y][0], &uClr[uFrm[x][m_nSldCore][y]][0], 3);		//	‹^Ž—¶×°
+				//else		memset(&uSfc[x][y][0], uFrm[x][m_nSldCore][y], 3);					//	ÓÉ¸Û
+				if(m_bCal)	memcpy(&uSfc[x][y][0], &uClr[uFrm[(PX-1)-x][(PZ-1)-m_nSldCore][y]][0], 3);	//	‹^Ž—¶×°
+				else		memset(&uSfc[x][y][0], uFrm[(PX-1)-x][(PZ-1)-m_nSldCore][y], 3);			//	ÓÉ¸Û
 			}
 		}
 	}
@@ -1422,7 +1428,8 @@ void CCveDlg::imgIncl()
 			//	•ªÍÏ‚Ý
 			do{
 				//	ŒXŽÎ•â³—pÀ•WÝ’è
-				ptD[i] = CPoint((crIn.ptCirc[nS[i]].y+crOut.ptCirc[nS[i]].y)/2, PY-(crIn.ptCirc[nS[i]].x+crOut.ptCirc[nS[i]].x)/2);
+				//ptD[i] = CPoint((crIn.ptCirc[nS[i]].y+crOut.ptCirc[nS[i]].y)/2, PY-(crIn.ptCirc[nS[i]].x+crOut.ptCirc[nS[i]].x)/2);
+				ptD[i] = CPoint(PX-1-(crIn.ptCirc[nS[i]].x+crOut.ptCirc[nS[i]].x)/2, (crIn.ptCirc[nS[i]].y+crOut.ptCirc[nS[i]].y)/2);
 				//	ŠeÀ•WNo.‚ÌZ’l‚ð•]‰¿‚µ‚ÄNG‚È‚çÀ•WNo.‚ð•ÏX‚·‚é
 				dZ[i] = pkDepth[ptD[i].y][ptD[i].x].dSmp;
 				if(fabs(dZ[i])>10.0)
