@@ -292,6 +292,10 @@ BOOL CCveDlg::OnInitDialog()
 		for(y=0; y<PY; y++){
 			for(x=0; x<PX; x++){
 				pkDepth[y][x].nOrg = 0.0;	//	‰Šú‰æ‘œ¸Ø±
+#ifdef Z_RVS
+				pkRef[y][x].dSub *= -1;		//	•â³’l‚ð”½“]
+#endif // Z_RVS
+
 			}
 		}
 

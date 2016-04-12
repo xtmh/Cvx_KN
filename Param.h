@@ -2,11 +2,11 @@
 //	param.h
 ////////////////////////
 
-#define		VER			199
+#define		VER			200
 
 //#define		BMP_SAVE			//	‚±‚ê‚ð’è‹`‚·‚é‚Æ–Ê‰æ‘œ‚ðbmp‚Å•Û‘¶‚·‚é
 
-#define		Z_RVS					//	ZŽ²”½“](imgOpen())
+#define		Z_RVS					//	ZŽ²”½“](OnInitDialog(), imgOpen())
 
 #define		IMG_OFS		30
 
