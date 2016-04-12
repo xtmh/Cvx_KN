@@ -1268,15 +1268,15 @@ void CCveDlg::imgSlc()
 			}else if(m_bCurv){
 				//	òpã»ï‚ê≥å„Ω◊≤ΩâÊëú
 				//if(m_bCal)	memcpy(&uSfc[x][y][0], &uClr[uFro[x][m_nSldCore][y]][0], 3);		//	ã^éó∂◊∞
-				//else		memset(&uSfc[x][y][0], uFro[x][m_nSldCore][y], 3);					//	”…∏€
-				if(m_bCal)	memcpy(&uSfc[x][y][0], &uClr[uFro[(PX-1)-x][(PZ-1)-m_nSldCore][y]][0], 3);	//	ã^éó∂◊∞
-				else		memset(&uSfc[x][y][0], uFro[(PX-1)-x][(PZ-1)-m_nSldCore][y], 3);			//	”…∏€
+				//else		memset(&uSfc[x][y][0], uFro[x][m_nSldCore][y], 3);						//	”…∏€
+				if(m_bCal)	memcpy(&uSfc[x][y][0], &uClr[uFro[(PX-1)-x][m_nSldCore][y]][0], 3);		//	ZîΩì]	ã^éó∂◊∞
+				else		memset(&uSfc[x][y][0], uFro[(PX-1)-x][m_nSldCore][y], 3);				//			”…∏€
 			}else{
 				//	òpã»ï‚ê≥ëOΩ◊≤ΩâÊëú
 				//if(m_bCal)	memcpy(&uSfc[x][y][0], &uClr[uFrm[x][m_nSldCore][y]][0], 3);		//	ã^éó∂◊∞
 				//else		memset(&uSfc[x][y][0], uFrm[x][m_nSldCore][y], 3);					//	”…∏€
-				if(m_bCal)	memcpy(&uSfc[x][y][0], &uClr[uFrm[(PX-1)-x][(PZ-1)-m_nSldCore][y]][0], 3);	//	ã^éó∂◊∞
-				else		memset(&uSfc[x][y][0], uFrm[(PX-1)-x][(PZ-1)-m_nSldCore][y], 3);			//	”…∏€
+				if(m_bCal)	memcpy(&uSfc[x][y][0], &uClr[uFrm[(PX-1)-x][m_nSldCore][y]][0], 3);	//	ã^éó∂◊∞
+				else		memset(&uSfc[x][y][0], uFrm[(PX-1)-x][m_nSldCore][y], 3);			//	”…∏€
 			}
 		}
 	}
