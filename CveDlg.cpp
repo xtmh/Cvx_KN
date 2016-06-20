@@ -570,16 +570,19 @@ void CCveDlg::fileOpen()
 		//	面補正処理	//////////////////////////////////////////////////////////////
 		memcpy(pkDepth, pkRef, sizeof(CPeak)*PX*PY);		//	基準値をｺﾋﾟｰして復元
 		imgCalc();		//	湾曲補正処理	uFro <- uFrm
-		imgCvFit();		//	ｶｰﾌﾞﾌｨｯﾃｨﾝｸﾞ	dCrv <- ﾋﾟｰｸ, uFrm
+		imgCvFit();		//	ｶｰﾌﾞﾌｨｯﾃｨﾝｸﾞ	②dCrv <- ﾋﾟｰｸ, uFrm
 
 		if(bRef){
 			//	基準面用の処理
-			imgNrAvg();	//	近傍平均
-			imgLwSub();	//	下限値からの差分値
+			imgNrAvg();	//	近傍平均(③dAvg, ④MIN)
+			imgLwSub();	//	下限値からの差分値(⑤dSub, ⑥dCal)
 			//	無用のﾃﾞｰﾀを削除
 			for(int x=0; x<PX; x++){
 				for(int y=0; y<PY; y++){
 					pkDepth[y][x].dAvg = pkDepth[y][x].dCal = pkDepth[y][x].dSmp = pkDepth[y][x].dInc = 0.0;
+					//
+					//pkDepth[y][x].dSub*=-1;
+					//
 				}
 			}
 			f.Open("c:\\temp\\cvx\\reference.dat", CFile::modeCreate|CFile::modeWrite);
@@ -596,7 +599,7 @@ void CCveDlg::fileOpen()
 			m_strSts.Format("補正値 Ready");
 		}else{
 			//	評価用の処理
-			imgMeas();			//	試料計測				dSmp <- dCal, dSub	<< dCal <- dCrv, dAvg
+			imgMeas();			//	試料計測				⑧dSmp <- ⑥dCal, ⑤dSub	<< ⑥dCal <- ②dCrv, ③dAvg
 			//imgIncl();		//	傾斜面補正値(dInc)算出	dInc <- dSmp	※.面画像生成後に移動
 		}
 		imgSurface();		//	面画像生成					nOrg <- dSmp, dInc
@@ -1064,6 +1067,9 @@ void CCveDlg::imgLwSub()
 	for(y=0; y<PY; y++){
 		for(x=0; x<PX; x++){
 			pkDepth[y][x].dSub = pkDepth[y][x].dAvg - dMin;			//	下限値からの差分値
+			//
+			pkDepth[y][x].dSub *= -1;
+			//
 			pkDepth[y][x].dCal = pkDepth[y][x].dSmp = 
 						pkDepth[y][x].dCrv - pkDepth[y][x].dSub;	//	Test:差分値処理(実値-近傍平均値)
 		}
