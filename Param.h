@@ -2,7 +2,7 @@
 //	param.h
 ////////////////////////
 
-#define		VER			200
+#define		VER			203
 
 //#define		BMP_SAVE			//	‚±‚ê‚ð’è‹`‚·‚é‚Æ–Ê‰æ‘œ‚ðbmp‚Å•Û‘¶‚·‚é
 

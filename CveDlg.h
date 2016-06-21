@@ -166,6 +166,7 @@ public:
 
 	CPeak		(*pkDepth)[PX];			//	Z‰ğÍî•ñ
 	CPeak		(*pkRef)[PX];			//	Šî€–Ê‚ÌZ‰ğÍî•ñ
+	CPeak		(*pkTmp)[PX];			//	•Û‘¶—pÃİÎß×Ø
 
 	double		dPkAvg;
 	double		dTrg[PY][2];

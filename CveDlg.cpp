@@ -292,7 +292,7 @@ BOOL CCveDlg::OnInitDialog()
 		for(y=0; y<PY; y++){
 			for(x=0; x<PX; x++){
 				pkDepth[y][x].nOrg = 0.0;	//	‰Šú‰æ‘œ¸Ø±
-#ifndef Z_RVS
+#ifdef Z_RVS
 				//	•â³ÃŞ°À‚à”½“]
 				pkDepth[y][x].dSub *= -1;	//	•â³’l‚ğ”½“](ˆ—‚Ég—p)
 				pkRef[y][x].dSub *= -1;		//	•â³’l‚ğ”½“]
@@ -578,27 +578,29 @@ void CCveDlg::fileOpen()
 			//	Šî€–Ê—p‚Ìˆ—
 			imgNrAvg();	//	‹ß–T•½‹Ï(‡BdAvg, ‡CMIN)
 			imgLwSub();	//	‰ºŒÀ’l‚©‚ç‚Ì·•ª’l(‡DdSub, ‡EdCal)
+			//	ÃİÎß×ØÒÓØŠm•Û
+			pkTmp = new CPeak[PY][PX];
+			memcpy(pkTmp, pkDepth, sizeof(CPeak)*PY*PX);	//	pkDepth -> pkTmp	
 			//	–³—p‚ÌÃŞ°À‚ğíœ
-			/*
 			for(int x=0; x<PX; x++){
 				for(int y=0; y<PY; y++){
-					pkDepth[y][x].dAvg = pkDepth[y][x].dCal = pkDepth[y][x].dSmp = pkDepth[y][x].dInc = 0.0;
-					//
-					//pkDepth[y][x].dSub*=-1;
-					//
+					pkTmp[y][x].dSub*=-1;	//	ØÌ§Úİ½ÃŞ°À‚Í‹É«”½“]
 				}
-			}*/
-			f.Open("c:\\temp\\cvx\\reference.dat", CFile::modeCreate|CFile::modeWrite);
+			}
 			//	ˆ³k
-			ret = LZ4_compress((char*)pkDepth, (char*)pkRef, sizeof(CPeak)*PX*PY);	//	pkDepth -> pkRef(ˆ³k)	
+			ret = LZ4_compress((char*)pkTmp, (char*)pkRef, sizeof(CPeak)*PX*PY);	//	pkDepth -> pkRef(ˆ³k)	
 			if(ret<=0){
 				m_strDet.Format("dat error.");
 				MessageBox(m_strDet);
 			}
 			UpdateData(FALSE);
+			//	Ì§²Ù•Û‘¶
+			f.Open("c:\\temp\\cvx\\reference.dat", CFile::modeCreate|CFile::modeWrite);
 			f.Write(pkRef, ret);
 			f.Close();
-			memcpy(pkRef, pkDepth, sizeof(CPeak)*PX*PY);							//	pkDepth -> pkRef	
+			//	Œãˆ—
+			memcpy(pkRef, pkDepth, sizeof(CPeak)*PX*PY);	//	pkDepth -> pkRef	
+			delete[]	pkTmp;
 			m_strSts.Format("•â³’l Ready");
 		}else{
 			//	•]‰¿—p‚Ìˆ—
