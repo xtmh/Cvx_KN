@@ -7,6 +7,7 @@
 //#define		BMP_SAVE			//	‚±‚ê‚ğ’è‹`‚·‚é‚Æ–Ê‰æ‘œ‚ğbmp‚Å•Û‘¶‚·‚é
 
 #define		Z_RVS					//	Z²”½“](OnInitDialog(), imgOpen())
+//#define		REF_AVG					//	ØÌ§Úİ½ÃŞ°À‚Ì•½ŠŠ‰»ˆ—
 
 #define		IMG_OFS		30
 

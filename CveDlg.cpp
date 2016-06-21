@@ -292,7 +292,8 @@ BOOL CCveDlg::OnInitDialog()
 		for(y=0; y<PY; y++){
 			for(x=0; x<PX; x++){
 				pkDepth[y][x].nOrg = 0.0;	//	初期画像ｸﾘｱ
-#ifdef Z_RVS
+#ifndef Z_RVS
+				//	補正ﾃﾞｰﾀも反転
 				pkDepth[y][x].dSub *= -1;	//	補正値を反転(処理に使用)
 				pkRef[y][x].dSub *= -1;		//	補正値を反転
 #endif // Z_RVS
@@ -578,6 +579,7 @@ void CCveDlg::fileOpen()
 			imgNrAvg();	//	近傍平均(③dAvg, ④MIN)
 			imgLwSub();	//	下限値からの差分値(⑤dSub, ⑥dCal)
 			//	無用のﾃﾞｰﾀを削除
+			/*
 			for(int x=0; x<PX; x++){
 				for(int y=0; y<PY; y++){
 					pkDepth[y][x].dAvg = pkDepth[y][x].dCal = pkDepth[y][x].dSmp = pkDepth[y][x].dInc = 0.0;
@@ -585,7 +587,7 @@ void CCveDlg::fileOpen()
 					//pkDepth[y][x].dSub*=-1;
 					//
 				}
-			}
+			}*/
 			f.Open("c:\\temp\\cvx\\reference.dat", CFile::modeCreate|CFile::modeWrite);
 			//	圧縮
 			ret = LZ4_compress((char*)pkDepth, (char*)pkRef, sizeof(CPeak)*PX*PY);	//	pkDepth -> pkRef(圧縮)	
@@ -1000,6 +1002,7 @@ void CCveDlg::imgNrAvg()
 	//	近傍平均値算出(③dAvg)
 	for(y=0; y<PY; y++){
 		for(x=0; x<PX; x++){
+#ifdef REF_AVG
 			//	輪郭ﾃﾞｰﾀを区分
 			if((x<=AVG_FRM)||(x>(PX-AVG_FRM-1))||(y<=AVG_FRM)||(y>(PY-AVG_FRM-1))){
 				//	ﾌﾚｰﾑｴﾘｱは実値
@@ -1011,8 +1014,6 @@ void CCveDlg::imgNrAvg()
 				//	矩形ｴﾘｱで平均化
 				for(ty=y-AVG_FRM; ty<=y+AVG_FRM; ty++){
 					for(tx=x-AVG_FRM; tx<=x+AVG_FRM; tx++){
-
-
 						//dSum += pkDepth[y][x].dCrv;
 						//	異常値はﾊﾟｽ
 						data = pkDepth[ty][tx].dCrv;
@@ -1037,8 +1038,12 @@ void CCveDlg::imgNrAvg()
 				}
 				//pkDepth[y][x].dAvg = dSum/(AVG_FRM*2+1)/(AVG_FRM*2+1);	//	近傍平均値
 			}
-		}
-	}
+#else
+			//	面の忠実性を上げるために近傍平均処理をしない(代わりにﾘﾌｧﾚﾝｽの影響が直接出る)
+			pkDepth[y][x].dAvg = pkDepth[y][x].dCrv;
+#endif // REF_AVG
+		}//	end for x
+	}//	end for y
 #endif
 }
 
@@ -1069,10 +1074,12 @@ void CCveDlg::imgLwSub()
 		for(x=0; x<PX; x++){
 			pkDepth[y][x].dSub = pkDepth[y][x].dAvg - dMin;			//	下限値からの差分値
 			//
-			pkDepth[y][x].dSub *= -1;
+			//pkDepth[y][x].dSub *= -1;
 			//
-			pkDepth[y][x].dCal = pkDepth[y][x].dSmp = 
-						pkDepth[y][x].dCrv - pkDepth[y][x].dSub;	//	Test:差分値処理(実値-近傍平均値)
+			//pkDepth[y][x].dCal = pkDepth[y][x].dSmp = 
+			//			pkDepth[y][x].dCrv - pkDepth[y][x].dSub;	//	Test:差分値処理(実値-近傍平均値)
+			//	無用なﾃﾞｰﾀは削除
+			pkDepth[y][x].dAvg = pkDepth[y][x].dCal = pkDepth[y][x].dSmp = pkDepth[y][x].dInc = 0.0;
 		}
 	}
 	///////////////////////////////////////////////////////////////////////////////
