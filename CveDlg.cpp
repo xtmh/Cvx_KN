@@ -571,7 +571,6 @@ void CCveDlg::fileOpen()
 		//////////////////////////////////////////////////////////////////////////////
 		//	–Ê•â³ˆ—	//////////////////////////////////////////////////////////////
 		memcpy(pkDepth, pkRef, sizeof(CPeak)*PX*PY);		//	Šî€’l‚ğºËß°‚µ‚Ä•œŒ³
-		imgCalc();		//	˜p‹È•â³ˆ—	uFro <- uFrm
 		imgCvFit();		//	¶°ÌŞÌ¨¯Ã¨İ¸Ş	‡AdCrv <- Ëß°¸, uFrm
 
 		if(bRef){
@@ -604,9 +603,10 @@ void CCveDlg::fileOpen()
 			m_strSts.Format("•â³’l Ready");
 		}else{
 			//	•]‰¿—p‚Ìˆ—
-			imgMeas();			//	—¿Œv‘ª				‡GdSmp <- ‡EdCal, ‡DdSub	<< ‡EdCal <- ‡AdCrv, ‡BdAvg
-			//imgIncl();		//	ŒXÎ–Ê•â³’l(dInc)Zo	dInc <- dSmp	¦.–Ê‰æ‘œ¶¬Œã‚ÉˆÚ“®
+			imgMeas();		//	—¿Œv‘ª				‡GdSmp <- ‡EdCal, ‡DdSub	<< ‡EdCal <- ‡AdCrv, ‡BdAvg
+			//imgIncl();	//	ŒXÎ–Ê•â³’l(dInc)Zo	dInc <- dSmp	¦.–Ê‰æ‘œ¶¬Œã‚ÉˆÚ“®
 		}
+		imgCalc();			//	˜p‹È•â³ˆ—	uFro <- uFrm(Calibration‚É‚Í–¢•â³‚Ì‚Ü‚Ü)
 		imgSurface();		//	–Ê‰æ‘œ¶¬					nOrg <- dSmp, dInc
 
 		//////////////////////////////////////////////////////////////////////////////
@@ -1801,9 +1801,9 @@ void CCveDlg::OnBnClickedIncl()
 //	•`‰æXV
 void CCveDlg::imgUpdate()
 {
-	imgSurface();
-	imgSlc();
-	imgChg();
+	imgSurface();	//	‘e‚³‰æ‘œÃŞ°À¶¬
+	imgSlc();		//	X-Y’f–Ê¶¬
+	imgChg();		//	Y-Z’f–Ê¶¬
 }
 
 //	‰ğÍˆ—(“Á’¥—Ê’Šo)
