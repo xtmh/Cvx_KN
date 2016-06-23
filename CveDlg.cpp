@@ -714,6 +714,7 @@ void CCveDlg::imgCalc()
 	int			x, y, z, c;
 	int			tz[PY];
 
+	memset(uFro, 0, PX*PY*PZ);		//	‰Šú‰»
 	for(x=0; x<PX; x++){			//	1024
 		for(z=0; z<PZ; z++){		//	512
 #pragma omp parallel for
