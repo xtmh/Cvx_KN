@@ -606,7 +606,7 @@ void CCveDlg::fileOpen()
 			imgMeas();		//	帋椏寁應				嘒dSmp <- 嘐dCal, 嘍dSub	<< 嘐dCal <- 嘇dCrv, 嘊dAvg
 			//imgIncl();	//	孹幬柺曗惓抣(dInc)嶼弌	dInc <- dSmp	仸.柺夋憸惗惉屻偵堏摦
 		}
-		imgCalc();			//	榩嬋曗惓張棟	uFro <- uFrm(Calibration帪偵偼枹曗惓偺傑傑)
+		imgCalc();			//	dSub偵傛傞榩嬋曗惓張棟		uFro <- uFrm <- dSub
 		imgSurface();		//	柺夋憸惗惉					nOrg <- dSmp, dInc
 
 		//////////////////////////////////////////////////////////////////////////////
@@ -614,8 +614,8 @@ void CCveDlg::fileOpen()
 		UpdateData(FALSE);
 	}
 	imgChg();			//	Y-Z抐柺惗惉		uDsp <- uFro or uFrm
-	imgSlc();			//	X-Y抐柺惗惉		uSfc <- nOrg or uFro or uFrm
-	OnBnClickedAnlyz();	//	摿挜暘愅				use uSfc
+	imgSlc();			//	X-Y抐柺惗惉		uSfc <- nOrg or uFro or uFrm <- nOrg
+	//OnBnClickedAnlyz();	//	摿挜暘愅				use uSfc
 	Invalidate(FALSE);
 
 	m_strDet.Format("%.3f[ms]", GetPassTimeWindow()-dTm);
@@ -901,13 +901,15 @@ void CCveDlg::imgCvFit()
 #pragma omp parallel for
 		for(x=0; x<PX; x++){
 			nMax[x] = 0;
-			pkDepth[y][x].nOrg = 510;		//	100偱奐巒偡傞(摿暿側抣偲偟偰)
+			pkDepth[y][x].nOrg = 510;		//	510偱奐巒偡傞(摿暿側抣偲偟偰)
 			for(z=0; z<PZ; z++){
 				//uDt[x] = uFro[x][z][y];	//	uFro:曗惓夋憸->曗惓夋憸
 				uDt[x] = uFrm[x][z][y];		//	uFrm:柍曗惓夋憸->曗惓夋憸
-				if((nMax[x]<uDt[x])&&(50<uDt[x])&&(uDt[x]!=255)){
+				//if((nMax[x]<uDt[x])&&(50<uDt[x])&&(uDt[x]!=255)){		//	OK
+				if((nMax[x]<uDt[x])&&(25<uDt[x])&&(uDt[x]!=255)){		//	NG
+				//if((nMax[x]<uDt[x])&(30<uDt[x])&(uDt[x]!=255)){		//	OK
 					//	嵟戝偱50傛傝戝偒偔255偱側偄
-					nMax[x] = uDt[x];				//	诉案抣曐帩
+					nMax[x] = uDt[x];		//	诉案抣曐帩
 					pkDepth[y][x].nOrg = z;	//	诉案嵗昗曐帩
 				}//	end if
 			}//	end for z
@@ -937,12 +939,6 @@ void CCveDlg::imgCvFit()
 						n++;
 					}
 					pkDepth[y][x].dCrv = imgFitting(dDst[y], nFit[y], nPeak[y]);
-					/*	
-					pkDepth[y][x].a = dDst[y][0];
-					pkDepth[y][x].b = dDst[y][1];
-					pkDepth[y][x].c = dDst[y][2];
-					memcpy(pkDepth[y][x].nFit, nFit[y], sizeof(int)*FIT_NUM);
-					*/
 			}else{
 				//	诉案側偟
 				pkDepth[y][x].dCrv = 0.0;
@@ -1065,7 +1061,8 @@ void CCveDlg::imgLwSub()
 	//MessageBox(s);
 	for(y=0; y<PY; y++){
 		for(x=0; x<PX; x++){
-			if((dMin > pkDepth[y][x].dAvg)&&(pkDepth[y][x].dAvg!=0)){
+			//if((dMin > pkDepth[y][x].dAvg)&&(pkDepth[y][x].dAvg!=0)){
+			if((dMin > pkDepth[y][x].dAvg)&&(pkDepth[y][x].dAvg>0)){		//	晧抣傪嫋梕偟側偄
 				dMin = pkDepth[y][x].dAvg;
 			}
 		}
@@ -1271,6 +1268,7 @@ void CCveDlg::imgChg()
 
 //	擟堄Z偵傛傞X-Y抐柺夋憸惗惉
 //	uSfc偺惗惉
+//	pkDepth->uSfc丗XY幉岎姺
 void CCveDlg::imgSlc()
 {
 	int	x, y, c;

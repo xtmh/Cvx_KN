@@ -110,8 +110,9 @@ void CCirc::OnPaint()
 	d->m_strXY.Format("Click:(%d, %d)\nMove:(%d, %d)\n → H：%+.2f[um]", 
 						d->ptPos.x, d->ptPos.y,
 						d->ptMov.x, d->ptMov.y,
-						//(-1*UM_RATIO*d->pkDepth[d->ptMov.y][d->ptMov.x].dSmp/(double)d->nViewRange));
-						-(UM_RATIO*d->pkDepth[d->ptMov.x][d->ptMov.y].dSmp));
+						//	imgSlc()でXY軸交換しているのでpkDepthでのXY座標指定逆
+						-(UM_RATIO*d->pkDepth[d->ptMov.x][(PY-1)-d->ptMov.y].dSmp));
+	//
 	dc.SelectObject(pOldPen);
 	CString	s;
 	//	ﾋﾟｰｸ検出完了
@@ -148,14 +149,15 @@ void CCirc::OnMouseMove(UINT nFlags, CPoint point)
 {
 	CCveDlg* d = (CCveDlg*)pv;
 	switch(nFlags){
-	//	左ﾎﾞﾀﾝが押された状態(ｽﾗｲｽﾚﾍﾞﾙ決定)
 	case	MK_RBUTTON:
+		//	右ﾎﾞﾀﾝが押された状態(ｽﾗｲｽﾚﾍﾞﾙ決定)
 		d->m_nEdit = d->m_nSld = point.y*2;
 		d->UpdateData(FALSE);
 		d->imgChg();
 		Invalidate(FALSE);
 		break;
 	case	MK_LBUTTON:
+		//	左ﾎﾞﾀﾝが押された状態(ptMovを更新)
 		d->ptMov.x = d->ptPos.x/2 + point.x;
 		d->ptMov.y = d->ptPos.y/2 + (PY/EXPND-point.y-1);
 		Invalidate(FALSE);
