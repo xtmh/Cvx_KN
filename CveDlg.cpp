@@ -603,7 +603,8 @@ void CCveDlg::fileOpen()
 			m_strSts.Format("•â³’l Ready");
 		}else{
 			//	•]‰¿—p‚Ìˆ—
-			imgMeas();		//	—¿Œv‘ª				‡GdSmp <- ‡EdCal, ‡DdSub	<< ‡EdCal <- ‡AdCrv, ‡BdAvg
+			//imgMeas();		//	—¿Œv‘ª				‡GdSmp <- ‡EdCal, ‡DdSub	<< ‡EdCal <- ‡AdCrv, ‡BdAvg
+			imgMeas2();		//	—¿Œv‘ª				‡GdSmp <- ‡EdCal, ‡DdSub	<< ‡EdCal <- ‡AdCrv, ‡BdAvg
 			//imgIncl();	//	ŒXÎ–Ê•â³’l(dInc)Zo	dInc <- dSmp	¦.–Ê‰æ‘œ¶¬Œã‚ÉˆÚ“®
 		}
 		imgCalc();			//	dSub‚É‚æ‚é˜p‹È•â³ˆ—		uFro <- uFrm <- dSub
@@ -945,6 +946,21 @@ void CCveDlg::imgCvFit()
 			}//	end if
 		}//	end for x
 	}//	end for y
+
+	/*
+	//	Fileo—Í
+	CFile	f;
+	CString	s;
+	f.Open("c:\\temp\\cvx\\fit.csv", CFile::modeCreate|CFile::modeWrite);
+	x = 100;
+	for(y=0; y<PY; y++){
+		//s.Format("%d,%d,%.3f,%.3f\n", y, pkDepth[y][x].nOrg, pkDepth[y][x].dCrv, pkDepth[y][x].dSub);		//	X²ÌßÛÌ§²Ù
+		s.Format("%d,%d,%.3f,%.3f\n", y, pkDepth[x][y].nOrg, pkDepth[x][y].dCrv, pkDepth[x][y].dSub);		//	Y²ÌßÛÌ§²Ù
+		//pkDepth[x][y].dSub = 0;	//	Y²‚É•ü
+		f.Write(s, s.GetLength());
+	}
+	f.Close();
+	/**/
 }
 
 //	‹ß–T•½‹Ï’lZo
@@ -1016,6 +1032,7 @@ void CCveDlg::imgNrAvg()
 						//dSum += pkDepth[y][x].dCrv;
 						//	ˆÙí’l‚ÍÊß½
 						data = pkDepth[ty][tx].dCrv;
+						
 						if(data < dAvg-(2*dSd))	// 2015.05.28•ÏX
 						{
 							continue;
@@ -1120,13 +1137,11 @@ void CCveDlg::imgMeas()
 	for(y=0; y<PY; y++){
 		for(x=0; x<PX; x++){
 			if(pkDepth[y][x].dCrv != 0){
-				//	¶°ÌŞÌ¨¯Ã¨İ¸Ş‚Å’l‚ªæ‚ê‚½ê‡‚É•â³’lZo
 				if(m_bCurv)		pkDepth[y][x].dCal = pkDepth[y][x].dCrv - pkDepth[y][x].dSub;	//	˜p‹È•â³‚ ‚è
 				else			pkDepth[y][x].dCal = pkDepth[y][x].dCrv;						//	˜p‹È•â³‚È‚µ
 				dAvg += pkDepth[y][x].dCal;
 				num++;
 			}else{
-				//	¶°ÌŞÌ¨¯Ã¨İ¸Ş‚Å’l‚ªæ‚ê‚Ä‚¢‚È‚¢ê‡‚Í”rœ
 				pkDepth[y][x].dCal = 1000.0;		//	”rœ‚·‚×‚«“Á•Ê‚È’l
 			}//	end if
 		}//	end for x
@@ -1135,13 +1150,7 @@ void CCveDlg::imgMeas()
 	//	•½‹Ï0‚Ì·•ªÏ¯Ìß(‡GdSmp)
 	for(y=0; y<PY; y++){
 		for(x=0; x<PX; x++){
-			if(pkDepth[y][x].dCrv != 0){
-				//	¶°ÌŞÌ¨¯Ã¨İ¸Ş‚Å’l‚ªæ‚ê‚½ê‡‚É·•ª’lZo
-				pkDepth[y][x].dSmp = pkDepth[y][x].dCal - dAvg;
-			}else{
-				//	¶°ÌŞÌ¨¯Ã¨İ¸Ş‚Å’l‚ªæ‚ê‚Ä‚¢‚È‚¢ê‡‚Í”rœ
-				pkDepth[y][x].dSmp = 1000.0;
-			}
+			pkDepth[y][x].dSmp = pkDepth[y][x].dCal - dAvg;
 		}//	end for x
 	}//	end for y
 	Invalidate(FALSE);
@@ -1165,6 +1174,54 @@ void CCveDlg::imgMeas()
 	/**/
 	///////////////////////////////////////////////////////////////////////////////
 }
+
+//	—¿Œv‘ªˆ—
+//	dCrv, dSub -> dCal
+//	dCal, dAvg -> dSmp
+void CCveDlg::imgMeas2()
+{
+	int		n, x, y, c;
+	int		num;
+	double	dAvg;
+	int		qx;
+
+	//	–Ê•â³’lÄŒvZ(‡EdCal)
+	qx = PX/4;
+	for(n=0; n<4; n++){
+		dAvg = 0.0;
+		num = 0;
+		for(x=qx*n; x<(qx*n+qx); x++){
+			for(y=0; y<PY; y++){
+				if(pkDepth[y][x].dCrv != 0){
+					//	¶°ÌŞÌ¨¯Ã¨İ¸Ş‚Å’l‚ªæ‚ê‚½ê‡‚É•â³’lZo
+					if(m_bCurv)		pkDepth[y][x].dCal = pkDepth[y][x].dCrv - pkDepth[y][x].dSub;	//	˜p‹È•â³‚ ‚è
+					else			pkDepth[y][x].dCal = pkDepth[y][x].dCrv;						//	˜p‹È•â³‚È‚µ
+					dAvg += pkDepth[y][x].dCal;
+					num++;
+				}else{
+					//	¶°ÌŞÌ¨¯Ã¨İ¸Ş‚Å’l‚ªæ‚ê‚Ä‚¢‚È‚¢ê‡‚Í”rœ
+					pkDepth[y][x].dCal = 1000.0;		//	”rœ‚·‚×‚«“Á•Ê‚È’l
+				}//	end if
+			}//	end for x
+		}//	end for y
+		dAvg /= (double)num;	//	•½‹Ï‚‚³Zo(‡FAVG)
+		//	•½‹Ï0‚Ì·•ªÏ¯Ìß(‡GdSmp)
+		for(x=qx*n; x<(qx*n+qx); x++){
+			for(y=0; y<PY; y++){
+				if(pkDepth[y][x].dCrv != 0){
+					//	¶°ÌŞÌ¨¯Ã¨İ¸Ş‚Å’l‚ªæ‚ê‚½ê‡‚É·•ª’lZo
+					pkDepth[y][x].dSmp = pkDepth[y][x].dCal - dAvg;
+				}else{
+					//	¶°ÌŞÌ¨¯Ã¨İ¸Ş‚Å’l‚ªæ‚ê‚Ä‚¢‚È‚¢ê‡‚Í”rœ
+					pkDepth[y][x].dSmp = 1000.0;
+				}
+			}//	end for x
+		}//	end for y
+	}//	end for n
+	Invalidate(FALSE);
+}
+
+
 
 //	–Ê‰æ‘œ¶¬
 //	pixel->um‚Ö•ÏŠ·‚µ‚ÄnOrg‚ÖÄ“o˜^
